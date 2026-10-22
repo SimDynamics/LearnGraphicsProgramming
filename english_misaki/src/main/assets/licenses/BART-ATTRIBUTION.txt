@@ -1,0 +1,23 @@
+Misaki English BART grapheme-to-phoneme models
+Publisher and source: PeterReid
+License: Apache License, Version 2.0. Full text is available in the reading
+licenses screen and assets/narration/misaki/LICENSE.txt.
+
+US model: https://huggingface.co/PeterReid/graphemes_to_phonemes_en_us
+Pinned revision: a5631b285d18d59483c32c0c3379cb9fac924f4b
+Original weights SHA-256:
+dc4a02e62d4fcb4bb4097ecf00db89b8e1a12a549a52ab6adfbba220b80a55c5
+
+GB model: https://huggingface.co/PeterReid/graphemes_to_phonemes_en_gb
+Pinned revision: d8357d5067fa26a5c34134d6bbcf4bbf000c0ac8
+Original weights SHA-256:
+4994f474bb6f4584076a4e98189caaec11aa3f773a0d82d5bc263a03dd07e703
+
+Modifications: local conversion of the original encoder and decoder to ONNX
+opset 17, full float32, without quantization or retraining. Kotlin implements
+the original greedy generation and dialect-specific token mapping. The source
+model cards declare Apache-2.0. Converted resources are optional separate
+installations verified against the fixed sizes and SHA-256 in EnglishAuxResources.
+
+The Python conversion tools and their development dependencies are not shipped
+in the Android application. No eSpeak fallback is distributed or used.

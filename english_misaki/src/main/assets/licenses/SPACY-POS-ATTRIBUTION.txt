@@ -1,0 +1,54 @@
+spaCy en_core_web_sm 3.8.0 POS frontend
+
+Source pipeline: Explosion en_core_web_sm-3.8.0-py3-none-any.whl
+https://github.com/explosion/spacy-models/releases/tag/en_core_web_sm-3.8.0
+SHA-256: 1932429db727d4bff3deed6b34cfc05df17794f4a52eeb26cf8928f7c1a0fb85
+Pipeline license: MIT (retained in spacy_pos_model_license.txt).
+
+spaCy 3.8.7 tokenizer and lexical attributes:
+https://github.com/explosion/spaCy/tree/release-v3.8.7
+Copyright ExplosionAI; MIT (retained in spacy_pos_spacy_license.txt).
+
+Thinc 8.3.11 HashEmbed, maxout, layer normalization and residual CNN:
+https://github.com/explosion/thinc/tree/release-v8.3.11
+Copyright ExplosionAI; MIT (retained in spacy_pos_thinc_license.txt).
+
+MurmurHash algorithms by Austin Appleby are in the public domain.
+The selected Thinc CPU uint64 specialization is ported faithfully to Kotlin.
+
+Modifications: native Kotlin tokenizer/lexical extraction and a local ONNX opset 14
+conversion of the original float32 tok2vec and tagger parameters. The encoder's
+four padding rows are retained through all residual blocks. No retraining or
+quantization is performed. The optional converted graphs and resources are
+installed separately with their pinned SHA-256 and are not bundled into the APK.
+Python, spaCy, Thinc, typer-slim and click are used only during conversion;
+their native Python extensions are not redistributed in the Android application.
+
+spaCy lookups data 1.0.5 normalization
+https://github.com/explosion/spacy-lookups-data/tree/1d90ebc5fdc6ccd0f9b2447e47172986938a7ab5
+The 3510 lexeme normalization entries retained in spacy_pos.json match this
+source exactly after spaCy string hashing. They remain available after optional
+Play delivery is removed and for the original resources retained by the application.
+The upstream MIT copyright and permission notice follows in full:
+
+MIT License
+
+Copyright (c) 2019 ExplosionAI GmbH
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

@@ -1,0 +1,135 @@
+{
+  "format": 1,
+  "packName": "english_misaki",
+  "artifactContract": "EnglishAuxResources.artifacts",
+  "totalArtifactBytes": 12915892,
+  "precision": "FP32",
+  "licenseAuditDate": "2026-10-14",
+  "redistribution": "The upstream sources declare Apache-2.0 and MIT licenses, subject to the included license, copyright, attribution and modification notices. Runtime HTTPS sources and the authoritative artifact hashes are declared in EnglishAuxResources.kt. These metadata do not assert that a Google Play module is enabled or published.",
+  "sources": [
+    {
+      "id": "bart-us",
+      "publisher": "PeterReid",
+      "model": "graphemes_to_phonemes_en_us",
+      "revision": "a5631b285d18d59483c32c0c3379cb9fac924f4b",
+      "sourceUrl": "https://huggingface.co/PeterReid/graphemes_to_phonemes_en_us/tree/a5631b285d18d59483c32c0c3379cb9fac924f4b",
+      "license": "Apache-2.0",
+      "licenseDeclarationUrl": "https://huggingface.co/PeterReid/graphemes_to_phonemes_en_us/resolve/a5631b285d18d59483c32c0c3379cb9fac924f4b/README.md",
+      "originalWeightsSha256": "dc4a02e62d4fcb4bb4097ecf00db89b8e1a12a549a52ab6adfbba220b80a55c5",
+      "conversion": "FP32 ONNX opset 17 encoder and decoder; no quantization or retraining",
+      "exporter": "scripts/narration/export_misaki_bart.py"
+    },
+    {
+      "id": "bart-gb",
+      "publisher": "PeterReid",
+      "model": "graphemes_to_phonemes_en_gb",
+      "revision": "d8357d5067fa26a5c34134d6bbcf4bbf000c0ac8",
+      "sourceUrl": "https://huggingface.co/PeterReid/graphemes_to_phonemes_en_gb/tree/d8357d5067fa26a5c34134d6bbcf4bbf000c0ac8",
+      "license": "Apache-2.0",
+      "licenseDeclarationUrl": "https://huggingface.co/PeterReid/graphemes_to_phonemes_en_gb/resolve/d8357d5067fa26a5c34134d6bbcf4bbf000c0ac8/README.md",
+      "originalWeightsSha256": "4994f474bb6f4584076a4e98189caaec11aa3f773a0d82d5bc263a03dd07e703",
+      "conversion": "FP32 ONNX opset 17 encoder and decoder; no quantization or retraining",
+      "exporter": "scripts/narration/export_misaki_bart.py"
+    },
+    {
+      "id": "spacy-pos",
+      "publisher": "Explosion",
+      "model": "en_core_web_sm",
+      "version": "3.8.0",
+      "sourceUrl": "https://github.com/explosion/spacy-models/releases/tag/en_core_web_sm-3.8.0",
+      "originalWheelSha256": "1932429db727d4bff3deed6b34cfc05df17794f4a52eeb26cf8928f7c1a0fb85",
+      "license": "MIT",
+      "licenseDeclarationUrl": "https://raw.githubusercontent.com/explosion/spacy-models/master/meta/en_core_web_sm-3.8.0.json",
+      "conversion": "FP32 ONNX opset 14 tok2vec and tagger plus JSON frontend; no quantization or retraining",
+      "exporter": "scripts/narration/export_misaki_spacy_pos.py"
+    },
+    {
+      "id": "spacy-frontend",
+      "publisher": "Explosion",
+      "version": "3.8.7",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/explosion/spaCy/tree/release-v3.8.7",
+      "licenseDeclarationUrl": "https://raw.githubusercontent.com/explosion/spaCy/release-v3.8.7/LICENSE"
+    },
+    {
+      "id": "thinc-architecture",
+      "publisher": "Explosion",
+      "version": "8.3.11",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/explosion/thinc/tree/release-v8.3.11",
+      "licenseDeclarationUrl": "https://raw.githubusercontent.com/explosion/thinc/release-v8.3.11/LICENSE"
+    },
+    {
+      "id": "spacy-lexeme-normalization",
+      "publisher": "Explosion",
+      "version": "1.0.5",
+      "revision": "1d90ebc5fdc6ccd0f9b2447e47172986938a7ab5",
+      "license": "MIT",
+      "sourceUrl": "https://github.com/explosion/spacy-lookups-data/tree/1d90ebc5fdc6ccd0f9b2447e47172986938a7ab5",
+      "licenseDeclarationUrl": "https://raw.githubusercontent.com/explosion/spacy-lookups-data/1d90ebc5fdc6ccd0f9b2447e47172986938a7ab5/LICENSE",
+      "normalizationDataUrl": "https://raw.githubusercontent.com/explosion/spacy-lookups-data/1d90ebc5fdc6ccd0f9b2447e47172986938a7ab5/spacy_lookups_data/data/en_lexeme_norm.json",
+      "normalizationDataSha256": "304b2ec8c49f6bbb8bcf85cd0846f4db5ec9bd10c8cc0ba1df047038afed9262",
+      "verification": "All 3510 entries exactly match spacy_pos.json lexemeNorm after the original spaCy string hash."
+    }
+  ],
+  "artifacts": [
+    {
+      "fileName": "en_gb_bart_decoder.onnx",
+      "bytes": 1737441,
+      "sha256": "aa31f579ab8b75ec0f6571a4e85b15d0f501f2fea2415b77fbd000f1950e34be",
+      "source": "bart-gb"
+    },
+    {
+      "fileName": "en_gb_bart_encoder.onnx",
+      "bytes": 1415363,
+      "sha256": "bef604b9a32df6a270a3abc9641da78e74f3d57dfcaf6ed1a500085758bbedc0",
+      "source": "bart-gb"
+    },
+    {
+      "fileName": "en_gb_bart.json",
+      "bytes": 1015,
+      "sha256": "42176b75d06462a383549aabc84451974c70f5abf5cd00013a872332252b1fdc",
+      "source": "bart-gb"
+    },
+    {
+      "fileName": "en_us_bart_decoder.onnx",
+      "bytes": 1737441,
+      "sha256": "9e940b23aea9afa51196e40e47faf81ce14fb8663d513bc5fdae9cb1c29c63c0",
+      "source": "bart-us"
+    },
+    {
+      "fileName": "en_us_bart_encoder.onnx",
+      "bytes": 1415363,
+      "sha256": "4191ca322086422164f652bdaeab2bf2c2a46c79b7e77126242ba28fe10fb195",
+      "source": "bart-us"
+    },
+    {
+      "fileName": "en_us_bart.json",
+      "bytes": 1019,
+      "sha256": "c76a6851fffbca82f4856d331e478758d168bc9b8f0d51a57290ea9f344395ab",
+      "source": "bart-us"
+    },
+    {
+      "fileName": "spacy_pos.json",
+      "bytes": 316435,
+      "sha256": "99d3610a6e997705627bdf7ee271af72aa61131bb4d1c48acf267d732eef1d01",
+      "source": "spacy-pos"
+    },
+    {
+      "fileName": "spacy_pos.onnx",
+      "bytes": 6291815,
+      "sha256": "c5cc2867055c09b2825cf5370d171fbd46c085bd4e03e3f238a030b81ba86399",
+      "source": "spacy-pos"
+    }
+  ],
+  "notices": [
+    "licenses/APACHE-2.0.txt",
+    "licenses/BART-ATTRIBUTION.txt",
+    "licenses/SPACY-POS-ATTRIBUTION.txt",
+    "licenses/SPACY-MODEL-MIT.txt",
+    "licenses/SPACY-MIT.txt",
+    "licenses/THINC-MIT.txt",
+    "licenses/NOTICE.txt",
+    "licenses/SPACY-LOOKUPS-MIT.txt"
+  ]
+}

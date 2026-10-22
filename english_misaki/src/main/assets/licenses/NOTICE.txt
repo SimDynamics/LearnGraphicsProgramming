@@ -1,0 +1,31 @@
+English Misaki optional neural resource pack
+
+BART US/GB grapheme-to-phoneme models: Peter Reid and contributors.
+Upstream licenses: Apache License 2.0. See APACHE-2.0.txt and
+BART-ATTRIBUTION.txt for the original model revisions and checksums.
+The upstream pinned model cards declare Apache-2.0; those revisions do not
+contain additional LICENSE or NOTICE files.
+
+spaCy en_core_web_sm 3.8.0: Copyright 2021 ExplosionAI GmbH.
+spaCy 3.8.7 and Thinc 8.3.11: ExplosionAI and their listed contributors.
+Licenses: MIT. The exact copyright and permission notices are retained in
+SPACY-MODEL-MIT.txt, SPACY-MIT.txt and THINC-MIT.txt. See
+SPACY-POS-ATTRIBUTION.txt for the conversion and algorithm attribution.
+The 3510 lexeme normalization entries embedded in spacy_pos.json also match
+spaCy lookups data 1.0.5 exactly after spaCy string hashing. Copyright (c) 2019
+ExplosionAI GmbH; its full MIT notice is retained in SPACY-LOOKUPS-MIT.txt.
+
+Modifications: the original BART weights were locally converted to separate
+encoder/decoder ONNX opset 17 graphs. The original spaCy tok2vec and tagger
+weights were locally converted to an ONNX opset 14 graph with a JSON frontend.
+These are full FP32 conversions, without quantization or retraining. This
+pack preserves the eight already verified artifact bytes and their pinned
+SHA-256 identifiers; packaging does not regenerate or alter the models.
+
+This pack contains no Kokoro shared acoustic model, voice weights, English
+pronunciation dictionaries, Python runtime, model training data, or complete
+spaCy pipeline. OntoNotes 5 was licensed by Explosion for training; its corpus
+is not redistributed. The upstream model is released under MIT. The
+lemmatizer and its WordNet resources are excluded from this POS conversion.
+Source identities and artifact digests are recorded in provenance.json.
+No endorsement by upstream authors or data providers is implied.

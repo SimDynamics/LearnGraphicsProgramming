@@ -6,6 +6,8 @@ import android.net.Uri
 import android.os.SystemClock
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.learngraphicsprogramming.app.R
+import com.learngraphicsprogramming.app.UiLanguageSettings
 import java.io.File
 import java.util.UUID
 import java.util.concurrent.CountDownLatch
@@ -13,6 +15,8 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 import java.util.zip.ZipEntry
+import java.util.zip.ZipException
+import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -192,11 +196,22 @@ class KokoroResourceInstallationDeviceTest {
         outsideProbe = probe
         assertFalse(probe.exists())
         val traversal = zip("traversal.zip", "../${probe.name}")
+        // Android 14+ may reject the path before the store sees the entry.
+        var platformRejectedPath = false
+        try {
+            ZipInputStream(traversal.inputStream().buffered()).use { it.nextEntry }
+        } catch (error: ZipException) {
+            assertTrue("The platform rejection must be its traversal guard: $error",
+                error.message.orEmpty().contains("Invalid zip entry path", ignoreCase = true))
+            platformRejectedPath = true
+        }
         val traversalError = importZip(current, traversal)
         assertNotNull("An undeclared traversal entry must be rejected", traversalError)
-        assertTrue("Either the store or Android's ZIP path guard must reject traversal: $traversalError",
-            traversalError.orEmpty().contains("no declarado") ||
-                traversalError.orEmpty().contains("Invalid zip entry path", ignoreCase = true))
+        val localized = UiLanguageSettings.localizedContext(context)
+        val expectedError = if (platformRejectedPath)
+            localized.getString(R.string.narration_resource_import_failed)
+        else localized.getString(R.string.narration_resource_unknown_entry, "../${probe.name}")
+        assertEquals("The actual guard must use the existing localized error contract", expectedError, traversalError)
         assertFalse("Import must not write outside the revision directory", probe.exists())
         assertTrue(KokoroModelManifest.verify(File(root, voice.fileName), voice))
         assertPreservedFiles()
