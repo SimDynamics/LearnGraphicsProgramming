@@ -25,9 +25,18 @@ import org.junit.runner.RunWith
 class OpusWordTimingDeviceTest {
     private val instrumentation get() = InstrumentationRegistry.getInstrumentation()
     private val app get() = instrumentation.targetContext
-    private val assets = listOf(
-        "09fcddf2081b4fd20060bd189cf9ef7d54ba6f68ba75962d54fa5b6d9f64d6cd.ogg",
-        "0a65bcfe2a4051acc78a463dab7e557aeda94d8a84c7e76a3ef9ca6a8fce1b41.ogg")
+    private val assets: List<String> get() {
+        val requested = InstrumentationRegistry.getArguments().getString("opusAssets")
+            ?: return listOf(
+                "09fcddf2081b4fd20060bd189cf9ef7d54ba6f68ba75962d54fa5b6d9f64d6cd.ogg",
+                "0a65bcfe2a4051acc78a463dab7e557aeda94d8a84c7e76a3ef9ca6a8fce1b41.ogg")
+        val names = requested.split(',')
+        require(names.isNotEmpty() && names.all { it.matches(Regex("[0-9a-f]{64}\\.ogg")) }) {
+            "opusAssets must contain only comma-separated SHA-256 Opus filenames"
+        }
+        require(names.distinct().size == names.size) { "opusAssets must not contain duplicate recordings" }
+        return names
+    }
 
     @Test fun realOpusDecoderAndMediaPlayerShareThePostSkipPresentationOrigin() {
         val sandbox = File(app.cacheDir, "opus-word-clock-${System.nanoTime()}").apply { check(mkdirs()) }
