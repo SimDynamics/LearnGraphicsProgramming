@@ -6,10 +6,12 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Central arbitration for optional background narration.
- * Interactive playback, compilation and graphics always take precedence.
+ * Synthesis, compilation and graphics take precedence over optional generation.
+ * Cached playback protects its files without needlessly stopping that generation.
  */
 object NarrationWorkPriority {
     private val interactiveCount = AtomicInteger()
+    private var playbackCount = 0
     private val interrupts = CopyOnWriteArrayList<() -> Unit>()
     private val leaseLock = Any()
     // Once a reader enters, this maintenance attempt may never resume deletion.
@@ -17,6 +19,19 @@ object NarrationWorkPriority {
     private var maintenancePreempted = false
 
     val isBusy: Boolean get() = interactiveCount.get() > 0
+
+    /** A player does not require an inference lane. Keep cache deletion excluded,
+     * while automatic synthesis remains restricted by its real two-CPU scope. */
+    fun beginPlayback(): AutoCloseable {
+        synchronized(leaseLock) {
+            playbackCount++
+            if (maintenanceActive) maintenancePreempted = true
+        }
+        val closed = AtomicBoolean()
+        return AutoCloseable {
+            if (closed.compareAndSet(false, true)) synchronized(leaseLock) { playbackCount-- }
+        }
+    }
 
     fun beginInteractive(): AutoCloseable {
         synchronized(leaseLock) {
@@ -34,7 +49,7 @@ object NarrationWorkPriority {
 
     fun beginMaintenanceIfIdle(): AutoCloseable? {
         synchronized(leaseLock) {
-            if (interactiveCount.get() != 0 || maintenanceActive) return null
+            if (interactiveCount.get() != 0 || playbackCount != 0 || maintenanceActive) return null
             maintenanceActive = true
             maintenancePreempted = false
             interactiveCount.incrementAndGet()
@@ -53,7 +68,7 @@ object NarrationWorkPriority {
     }
 
     val isMaintenanceExclusive: Boolean get() = synchronized(leaseLock) {
-        maintenanceActive && !maintenancePreempted && interactiveCount.get() == 1
+        maintenanceActive && !maintenancePreempted && interactiveCount.get() == 1 && playbackCount == 0
     }
 
     /**
@@ -61,7 +76,7 @@ object NarrationWorkPriority {
      * A reader cannot acquire a lease midway through removing that file.
      */
     internal fun runMaintenanceStep(action: () -> Unit): Boolean = synchronized(leaseLock) {
-        if (!maintenanceActive || maintenancePreempted || interactiveCount.get() != 1) return false
+        if (!maintenanceActive || maintenancePreempted || interactiveCount.get() != 1 || playbackCount != 0) return false
         action()
         true
     }

@@ -116,6 +116,27 @@ object NarrationSettingsRepository {
     internal fun isCourseGenerationPreference(key: String?): Boolean =
         key?.startsWith(KEY_PAUSED_COURSE_PREFIX) == true
 
+    internal fun generationProfile(context: Context): NarrationGenerationProfile {
+        initializeDefaults(context)
+        // SharedPreferences publishes an edit atomically. Do not combine the old
+        // language with a newly selected voice by reading individual keys in a loop.
+        return NarrationGenerationProfile.fromPreferences(preferences(context).all)
+    }
+
+    internal fun isGenerationProfileCurrent(context: Context, profile: NarrationGenerationProfile): Boolean =
+        NarrationGenerationProfile.fromPreferences(preferences(context).all) == profile
+
+    /** The active worker owns this short-lived subscription, also when launched
+     * outside the service. Cancellation remains scoped to that worker's ORT lease. */
+    internal fun observeGenerationProfile(context: Context, changed: () -> Unit): AutoCloseable {
+        val prefs = preferences(context)
+        val listener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (NarrationGenerationProfile.isPreference(key)) changed()
+        }
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+        return AutoCloseable { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
+    }
+
     /** Also checked by queued work, before a settings observer can run on main. */
     fun isEnabled(context: Context): Boolean = preferences(context).getBoolean(KEY_ENABLED, true)
 

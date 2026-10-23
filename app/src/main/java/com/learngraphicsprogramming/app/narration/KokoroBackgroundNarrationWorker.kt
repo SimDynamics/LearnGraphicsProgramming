@@ -11,9 +11,7 @@ import java.util.concurrent.atomic.AtomicLong
 /** Current-page work survives its activity; the curriculum resumes in its original order. */
 internal class KokoroBackgroundNarrationWorker(
     private val app: Context,
-    private val catalog: (String, String?) -> Sequence<NarrationCurriculum.Page> = { route, course ->
-        NarrationCurriculum.pages(app, route, course)
-    }
+    private val catalog: ((String, String?) -> Sequence<NarrationCurriculum.Page>)? = null
 ) {
     enum class Outcome { COMPLETE, MORE, BUSY, PAUSED, UNAVAILABLE, RETRY }
 
@@ -33,6 +31,7 @@ internal class KokoroBackgroundNarrationWorker(
         if (!settings.enabled || settings.engine == NarrationEngine.ANDROID ||
             !NarrationSettingsRepository.advanceGenerationEnabled(app)) return Outcome.PAUSED
         if (!activeSession() || NarrationWorkPriority.isBusy) return Outcome.BUSY
+        val profile = NarrationSettingsRepository.generationProfile(app)
 
         val modelStore = KokoroModelStore(app)
         var english: EnglishMisakiG2P? = null
@@ -44,19 +43,27 @@ internal class KokoroBackgroundNarrationWorker(
         var scanned = 0
         var generated = 0
         var reused = 0
-        val page = KokoroPagePreparationQueue.snapshot(app)
-        val pageRevision = page?.revision
+        val submittedPage = KokoroPagePreparationQueue.snapshot(app)
+        // A voice change can precede the visible controller's main-thread observer.
+        // Its old durable queue must not acquire current-page priority for the new pass.
+        val page = submittedPage?.takeIf { profile.accepts(it.sentences) }
+        val pageRevision = submittedPage?.revision
         val plan = NarrationAudioPlanner.store(app)
         val planEpoch = plan.snapshot().epoch
         var cpuBudget: AutoCloseable? = null
         var frontendForeground: Boolean? = null
+        var frontendCpuMask: List<Int>? = null
         var currentPlanned: NarrationAudioPlan.PlannedPage? = null
         val started = SystemClock.elapsedRealtime()
         val cancel: () -> Unit = { this.cancel() }
         val interruption = NarrationWorkPriority.onPreempt(cancel)
         val pageChange = KokoroPagePreparationQueue.onChanged(cancel)
         val contextChange = plan.onChanged(cancel)
-        fun pageChanged() = KokoroPagePreparationQueue.snapshot(app)?.revision != pageRevision || !plan.isCurrent(planEpoch)
+        val profileChange = NarrationSettingsRepository.observeGenerationProfile(app) {
+            if (!NarrationSettingsRepository.isGenerationProfileCurrent(app, profile)) cancel()
+        }
+        fun pageChanged() = KokoroPagePreparationQueue.snapshot(app)?.revision != pageRevision ||
+            !plan.isCurrent(planEpoch) || !NarrationSettingsRepository.isGenerationProfileCurrent(app, profile)
         fun enabled() = NarrationSettingsRepository.isEngineAllowed(app, NarrationEngine.KOKORO) &&
             NarrationSettingsRepository.advanceGenerationEnabled(app)
         fun coursePermitted(): Boolean = currentPlanned?.let { planned ->
@@ -67,7 +74,15 @@ internal class KokoroBackgroundNarrationWorker(
         fun active() = enabled() && coursePermitted() && slice == cancellation.get() &&
             activeSession() && !NarrationWorkPriority.isBusy && !pageChanged()
         fun selectBudget(foreground: Boolean) {
-            if (frontendForeground == foreground) return
+            fun actualMask(): List<Int>? = if (foreground)
+                runCatching { NarrationCpuBudget.allowedCpus() }.getOrNull() else NarrationCpuBudget.allowedCpus()
+            val observed = actualMask()
+            if (frontendForeground == foreground && frontendCpuMask == observed) return
+            // Android can widen an existing thread mask when moving the process
+            // between cpusets. An idle ORT pool may have been widened too, even if
+            // the next selection happens to choose the same pair of CPUs.
+            if (frontendForeground == false && observed != null && observed.size > 2)
+                KokoroEngineCoordinator.releaseIfIdle()
             // The G2P pools also inherit the worker mask when constructed. Do not carry a
             // page-created pool into the automatic profile, or a capped pool into a page.
             cancelFrontend = null
@@ -76,6 +91,7 @@ internal class KokoroBackgroundNarrationWorker(
             cpuBudget?.close(); cpuBudget = null
             if (!foreground) cpuBudget = NarrationCpuBudget.capBackground()
             frontendForeground = foreground
+            frontendCpuMask = actualMask()
         }
         fun state(value: String, item: NarrationCurriculum.Sentence? = null, scope: String = "") {
             val fields = mutableMapOf<String, Any>("workerState" to value, "sliceScanned" to scanned,
@@ -98,13 +114,21 @@ internal class KokoroBackgroundNarrationWorker(
             val candidates = plan.candidates(page,
                 isCoursePaused = { route, course ->
                     NarrationSettingsRepository.courseGenerationPaused(app, route, course)
-                }, catalog = catalog)
+                }, catalog = catalog ?: { route, course -> NarrationCurriculum.pages(app, route, course, profile = profile) })
             for (planned in candidates) {
                 currentPlanned = planned
                 if (!coursePermitted()) continue
+                if (!profile.accepts(planned.page.sentences)) {
+                    // A supplied/recovered catalog must obey the same immutable
+                    // voice selection as the production iterator.
+                    deferredThisPass = true
+                    plan.defer(planned)
+                    continue
+                }
                 val foreground = planned.priority == NarrationAudioPriority.CURRENT_PAGE
                 val scope = when (planned.priority) {
                     NarrationAudioPriority.CURRENT_PAGE -> "page"
+                    NarrationAudioPriority.UNIT -> "unit"
                     NarrationAudioPriority.COURSE -> "course"
                     NarrationAudioPriority.GENERAL -> "curriculum"
                 }
@@ -227,6 +251,11 @@ internal class KokoroBackgroundNarrationWorker(
             state("complete")
             KokoroNarrationDiagnostics.event(app, TAG, "All available lesson sentences are cached", fields = mapOf("scanned" to scanned))
             return Outcome.COMPLETE
+        } catch (error: NarrationCpuPairBusyException) {
+            state("cpu-pair-busy")
+            KokoroNarrationDiagnostics.event(app, TAG,
+                "Optional generation waiting for the previous CPU pair to be released", error)
+            return Outcome.BUSY
         } catch (error: NarrationCpuLimitException) {
             state("cpu-limit-unavailable")
             KokoroNarrationDiagnostics.event(app, TAG, "Optional generation paused: Android CPU limit could not be guaranteed", error)
@@ -247,6 +276,7 @@ internal class KokoroBackgroundNarrationWorker(
             interruption.close()
             pageChange.close()
             contextChange.close()
+            profileChange.close()
             runCatching { english?.close() }
             runCatching { (french as? AutoCloseable)?.close() }
             try { cpuBudget?.close() } finally { modelStore.close() }

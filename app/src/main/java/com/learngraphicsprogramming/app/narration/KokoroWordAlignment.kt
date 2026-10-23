@@ -55,6 +55,12 @@ internal class KokoroWordAlignment(context: Context) : AutoCloseable {
                     if (durationCpuMask != mask) {
                         durationModel?.close()
                         durationModel = null
+                        // Auxiliary G2P pools inherit their creating thread's affinity too.
+                        // Reuse a frontend only while it belongs to this effective CPU pair.
+                        english?.close()
+                        english = null
+                        (french as? AutoCloseable)?.close()
+                        french = null
                         durationCpuMask = mask
                     }
                     prepareInternal(text, language, voice, audio, isCancelled)

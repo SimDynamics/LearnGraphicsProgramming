@@ -18,6 +18,7 @@ import com.learngraphicsprogramming.app.CoursesActivity
 import com.learngraphicsprogramming.app.LessonActivity
 import com.learngraphicsprogramming.app.NavigationStateRepository
 import com.learngraphicsprogramming.app.PremiumRepository
+import com.learngraphicsprogramming.app.UnitActivity
 import java.io.File
 import java.security.MessageDigest
 import java.util.UUID
@@ -221,6 +222,18 @@ class NarrationAudioPlanningDeviceTest {
                 assertNull(selected.lessonId)
             }
         }
+        ActivityScenario.launch<UnitActivity>(Intent(actual, UnitActivity::class.java)
+            .putExtra("routeId", math).putExtra("courseId", target.courseId)
+            .putExtra("unitId", target.unitId)).use { host ->
+            host.onActivity { activity ->
+                activity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                val selected = NarrationAudioPlanner.store(actual).snapshot().context
+                assertEquals(math, selected.routeId)
+                assertEquals(target.courseId, selected.courseId)
+                assertEquals(target.unitId, selected.unitId)
+                assertNull(selected.lessonId)
+            }
+        }
         var closing: LessonNarrationController? = null
         ActivityScenario.launch<LessonActivity>(Intent(actual, LessonActivity::class.java)
             .putExtra("routeId", math).putExtra("courseId", target.courseId)
@@ -232,6 +245,7 @@ class NarrationAudioPlanningDeviceTest {
                 assertEquals(math, selected.routeId)
                 assertEquals(target.courseId, selected.courseId)
                 assertEquals(target.lessonId, selected.lessonId)
+                assertEquals(target.unitId, selected.unitId)
                 assertEquals(field<Int>(activity, "currentPage"), selected.pageIndex)
                 closing = activityController
                 assertFalse(requireNotNull(closing).isPlaying)
@@ -250,6 +264,54 @@ class NarrationAudioPlanningDeviceTest {
         instrumentation.runOnMainSync { NavigationStateRepository.saveRoutes(actual) }
         assertNull(NarrationAudioPlanner.store(actual).snapshot().context.routeId)
         assertFalse(NarrationSettingsRepository.get(actual).enabled)
+    }
+
+    @Test fun changingVoiceCancelsRealNativeInferenceWithoutDiscardingCompletedAudio() {
+        requireInstalledResources()
+        val store = KokoroModelStore(isolated)
+        val modelRoot = try { store.directory() } finally { store.close() }
+        val nextVoice = KokoroVoiceCatalog.voices.firstOrNull {
+            it.language == NarrationLanguage.SPANISH && it.id != VOICE && File(modelRoot, it.artifact.fileName).isFile
+        } ?: error("Install a second original Spanish voice before this real profile-switch acceptance")
+        val retained = "La grabación terminada conserva la voz seleccionada."
+        val long = "La narración mantiene cada palabra y conserva el orden de lectura. ".repeat(5).trim()
+        val first = page(programming, 0, retained).let { base -> base.copy(sentences = base.sentences +
+            NarrationCurriculum.Sentence(long, NarrationLanguage.SPANISH, VOICE, base.location)) }
+        val pages = mutableListOf(first)
+        val currentWorker = newWorker(pages)
+        val outcome = AtomicReference<KokoroBackgroundNarrationWorker.Outcome>()
+        val failure = AtomicReference<Throwable>()
+        workerThread = Thread({
+            try { outcome.set(currentWorker.runSlice { active.get() }) }
+            catch (error: Throwable) { failure.set(error) }
+        }, "QaAudioPlannerNativeVoiceSwitch").apply { start() }
+        await("Cache a real completed sentence before changing voice", 180_000L) {
+            KokoroNarrationCache.lookup(isolated, "es", VOICE, retained) != null
+        }
+        await("The old voice must own a real native inference before cancellation", 180_000L) {
+            nativeRunOwnedBy(currentWorker)
+        }
+        val kept = requireNotNull(KokoroNarrationCache.lookup(isolated, "es", VOICE, retained))
+        val original = audioIdentity(kept)
+        NarrationSettingsRepository.saveKokoroVoice(isolated, nextVoice.id)
+        // This worker is intentionally test-owned, not service-owned. The hot-path
+        // profile guard must cancel even without the main-thread preference observer.
+        workerThread!!.join(15_000L)
+        assertFalse("A changed saved voice must end the old native pass", workerThread!!.isAlive)
+        failure.get()?.let { throw AssertionError("Voice cancellation must remain a controlled interruption", it) }
+        assertEquals(KokoroBackgroundNarrationWorker.Outcome.MORE, outcome.get())
+        assertEquals(original, audioIdentity(kept))
+        assertNull(KokoroNarrationCache.lookup(isolated, "es", VOICE, long))
+        val latest = page(programming, 0, "La voz actual continúa sin borrar la anterior.").let { base ->
+            base.copy(sentences = base.sentences.map { it.copy(voice = nextVoice.id) })
+        }
+        pages.clear(); pages += latest
+        val before = generationEvents().size
+        assertEquals(KokoroBackgroundNarrationWorker.Outcome.COMPLETE, currentWorker.runSlice { active.get() })
+        assertNotNull(KokoroNarrationCache.lookup(isolated, "es", nextVoice.id, latest.sentences.single().text))
+        assertEquals(listOf(NarrationPageQueue.hash(latest.sentences.single())),
+            generationEvents().drop(before).map { it.getString("hash") })
+        assertEquals(original, audioIdentity(kept))
     }
 
     private fun newWorker(pages: List<NarrationCurriculum.Page>) = KokoroBackgroundNarrationWorker(isolated) { route, course ->

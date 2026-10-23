@@ -47,14 +47,17 @@ internal object NarrationCurriculum {
 
     /** The existing manifests remain the sole source of route/course/page order. */
     fun pages(context: Context, routeFilter: String? = null, courseFilter: String? = null,
-              requireComplete: Boolean = false): Sequence<Page> = sequence {
+              requireComplete: Boolean = false,
+              profile: NarrationGenerationProfile? = null): Sequence<Page> = sequence {
         fun checkCancelled() {
             if (Thread.currentThread().isInterrupted) throw InterruptedException("Curriculum preparation cancelled")
         }
         // A lazy iterator can scan many cached/ineligible pages before yielding. Respect
         // the service's existing interrupt here too, before the worker sees its next item.
         checkCancelled()
-        val preference = NarrationSettingsRepository.get(context)
+        // A lazy scan must never mix voices from different user selections.
+        // Its owner cancels the pass when this immutable profile is superseded.
+        val selection = profile ?: NarrationSettingsRepository.generationProfile(context)
         val routes = listOf(
             AppearanceSettingsRepository.ROUTE_PROGRAMMING,
             AppearanceSettingsRepository.ROUTE_MATH_PHYSICS
@@ -108,15 +111,14 @@ internal object NarrationCurriculum {
                         }
                         for (pageIndex in 0 until pages.length()) {
                             checkCancelled()
-                            val language = NarrationLanguage.forLesson(json, pageIndex, preference.language)
-                            val options = NarrationSettingsRepository.forLanguage(context, language)
+                            val language = NarrationLanguage.forLesson(json, pageIndex, selection.language)
                             val script = LessonNarrationScript.page(json, pageIndex, language,
                                 forKokoro = MixedSpanishG2P.productionEnabled) { blockType ->
                                 NarrationUiInstructions.forBlock(context, blockType)
                             }
                             val sentences = NarrationSegments.sentences(script.texts).map { text ->
                                 Sentence(
-                                    text, language, options.kokoroVoice,
+                                    text, language, selection.voice(language),
                                     "$route/${course.id}/${unit.id}/${lesson.id}/${pageIndex + 1}"
                                 )
                             }

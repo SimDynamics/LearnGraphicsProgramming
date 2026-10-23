@@ -114,6 +114,67 @@ class NarrationCpuBudgetDeviceTest {
         }
     }
 
+    @Test fun kernelRestorationAcceptsAnAvailableSubsetAndRecoversAnUnavailableSavedCpuOnlyAfterTheOuterLease() {
+        val original = NarrationCpuBudget.allowedCpus()
+        val main = mainMask()
+        // This is a deterministic syscall regression for the same EINVAL returned when a
+        // saved CPU goes offline or becomes disallowed. It does not change device cpusets,
+        // online CPUs, UI policy, or claim to measure a real hotplug performance event.
+        val unavailable = 1023
+        assertFalse(File("/sys/devices/system/cpu/cpu$unavailable").exists())
+        val selected = original.take(2)
+        var recovered = emptyList<Int>()
+        try {
+            setCallingThreadMask(selected)
+            val partial = restoreCallingThreadMask(listOf(selected.first(), unavailable), false)
+            assertEquals(listOf(selected.first()), partial)
+            assertEquals(partial, procMask(Process.myTid()))
+            setCallingThreadMask(selected)
+            try {
+                restoreCallingThreadMask(listOf(unavailable), false)
+                fail("An enclosing optional lease must never be expanded by EINVAL recovery")
+            } catch (expected: java.lang.reflect.InvocationTargetException) {
+                assertTrue(expected.cause is IllegalStateException)
+                assertTrue(requireNotNull(expected.cause?.message).contains("Invalid argument", ignoreCase = true))
+            }
+            assertEquals(selected, NarrationCpuBudget.allowedCpus())
+            recovered = restoreCallingThreadMask(listOf(unavailable), true)
+            assertTrue(recovered.isNotEmpty())
+            assertEquals(recovered, procMask(Process.myTid()))
+            assertTrue("The current cpuset still permits the initial caller mask", recovered.containsAll(original))
+            NarrationCpuBudget.capBackground().use {
+                val next = NarrationCpuBudget.allowedCpus()
+                assertTrue(next.size in 1..2)
+                assertTrue(recovered.containsAll(next))
+                assertEquals(next, procMask(Process.myTid()))
+            }
+            assertEquals(recovered, NarrationCpuBudget.allowedCpus())
+        } finally {
+            restoreCallingThreadMask(original, true)
+            assertEquals(main, mainMask())
+        }
+        evidence("kernel-restoration-einval.json", JSONObject().put("device", Build.MODEL)
+            .put("original", JSONArray(original)).put("capped", JSONArray(selected))
+            .put("unavailableCpu", unavailable).put("recoveredCurrentCpuset", JSONArray(recovered))
+            .put("mainMaskUnchanged", JSONArray(main))
+            .put("scope", "Real kernel syscall recovery with an unavailable CPU; no cpuset or device configuration was changed"))
+    }
+
+    @Test fun sameThreadNestedScopesRemainCappedUntilTheirFinalRelease() {
+        val original = NarrationCpuBudget.allowedCpus()
+        val main = mainMask()
+        NarrationCpuBudget.capBackground().use {
+            val selected = NarrationCpuBudget.allowedCpus()
+            NarrationCpuBudget.capBackground().use {
+                assertEquals(selected, procMask(Process.myTid()))
+            }
+            assertEquals("Releasing the inner engine lease keeps the outer frontend cap", selected,
+                NarrationCpuBudget.allowedCpus())
+        }
+        assertEquals(original, NarrationCpuBudget.allowedCpus())
+        assertEquals(main, mainMask())
+    }
+
     @Test fun aRealXnnpackSessionCreatesNativeWorkersInsideTheSelectedCpuPair() {
         val original = NarrationCpuBudget.allowedCpus()
         val main = mainMask()
@@ -123,11 +184,16 @@ class NarrationCpuBudgetDeviceTest {
         val modelSize = model.length()
         val modelModified = model.lastModified()
         assertEquals(KokoroModelManifest.sharedArtifacts.first { it.fileName == "model.onnx" }.bytes, modelSize)
+        val voice = InstrumentationRegistry.getArguments().getString("cpuVoice") ?: "ef_dora"
+        val voiceArtifact = requireNotNull(KokoroVoiceCatalog.find(voice)).artifact
+        assertTrue("The selected original voice must match its pinned SHA-256",
+            KokoroModelManifest.verify(File(root, voiceArtifact.fileName), voiceArtifact))
         val lexicon = SpanishFluidG2P.loadLexicon(File(root, "es_lexicon_cache.json"))
         val phones = SpanishFluidG2P.phonemize("La voz conserva el audio de la página actual.", lexicon)
         val before = tasks()
         val record = JSONObject().put("device", Build.MODEL).put("originalAllowed", JSONArray(original))
-            .put("mainAllowed", JSONArray(main)).put("tasksBeforeSession", JSONArray(before.values.toList()))
+            .put("mainAllowed", JSONArray(main)).put("voice", voice)
+            .put("tasksBeforeSession", JSONArray(before.values.toList()))
         try {
             NarrationCpuBudget.capBackground().use {
                 val selected = NarrationCpuBudget.allowedCpus()
@@ -138,7 +204,7 @@ class NarrationCpuBudgetDeviceTest {
                     val newSessionThreads = constructed.filterKeys { it !in before }
                     val identified = newSessionThreads.filterValues { nativePoolName(it.getString("name"), callerName) }
                     val start = SystemClock.elapsedRealtime()
-                    val pcm = engine.synthesizePhonemes(phones, "ef_dora", 1f)
+                    val pcm = engine.synthesizePhonemes(phones, voice, 1f)
                     assertTrue("Real native inference produces finite nonsilent audio", pcm.isNotEmpty() && pcm.all { it.isFinite() } && pcm.any { kotlin.math.abs(it) > .001 })
                     val during = tasks()
                     val consumedPools = identified.keys.mapNotNull { tid ->
@@ -198,6 +264,10 @@ class NarrationCpuBudgetDeviceTest {
         NarrationCpuBudget::class.java.getDeclaredMethod("nativeSetAllowedCpus", IntArray::class.java)
             .apply { isAccessible = true }.invoke(NarrationCpuBudget, cpus.toIntArray())
     }
+    private fun restoreCallingThreadMask(cpus: List<Int>, recoverCurrentCpuset: Boolean): List<Int> =
+        (NarrationCpuBudget::class.java.getDeclaredMethod("nativeRestoreAllowedCpus", IntArray::class.java,
+            Boolean::class.javaPrimitiveType).apply { isAccessible = true }
+            .invoke(NarrationCpuBudget, cpus.toIntArray(), recoverCurrentCpuset) as IntArray).toList()
     private fun tasks(): Map<Int, JSONObject> = File("/proc/self/task").listFiles().orEmpty().mapNotNull { directory ->
         runCatching {
             val tid = directory.name.toInt()

@@ -105,6 +105,7 @@ class LessonNarrationController(
     @Volatile private var playing = false
     private var language = NarrationSettingsRepository.get(appContext).language
     private var settings = NarrationSettingsRepository.forLanguage(appContext, language)
+    private var generationProfile = NarrationSettingsRepository.generationProfile(appContext)
     private var directory: File? = null
     private var segments = mutableListOf<Segment>()
     private var index = 0
@@ -469,7 +470,8 @@ class LessonNarrationController(
     }
     private val masterPreferences = appContext.getSharedPreferences("lesson_narration_settings", Context.MODE_PRIVATE)
     private val masterListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-        if (key == null || key == "enabled" || key == "engine") settingsChanged()
+        if (key == null || key == "enabled" || key == "engine" ||
+            NarrationGenerationProfile.isPreference(key)) settingsChanged()
     }
 
     init {
@@ -484,7 +486,8 @@ class LessonNarrationController(
     )
     private data class Synthesis(
         val generation: Long, val configuration: Long, val index: Int, val text: String,
-        val file: File, val settings: NarrationSettings, val feedbackToken: Long? = null,
+        val file: File, val settings: NarrationSettings, val profile: NarrationGenerationProfile,
+        val feedbackToken: Long? = null,
         val usedAndroidTts: Boolean = false, val storageFallback: Boolean = false
     ) {
         val id = "narration_" + generation + "_" + configuration + "_" + index +
@@ -733,6 +736,7 @@ class LessonNarrationController(
                           correctBlocks: Set<Int> = emptySet()): Boolean {
         stopInternal()
         settings = selected
+        generationProfile = NarrationSettingsRepository.generationProfile(appContext)
         if (!settings.enabled) {
             publishProgress(progressSnapshot(NarrationPlaybackPhase.UNAVAILABLE, pageIdentity))
             return false
@@ -906,7 +910,7 @@ class LessonNarrationController(
                 return
             }
             playing = true
-            foregroundPlayback = foregroundPlayback ?: NarrationWorkPriority.beginInteractive()
+            foregroundPlayback = foregroundPlayback ?: NarrationWorkPriority.beginPlayback()
             onState(true)
             publishGuideProgress(feedback, NarrationPlaybackPhase.BUFFERING)
             ensureSegment(feedback.index, feedback)
@@ -943,7 +947,7 @@ class LessonNarrationController(
             else { index = requireNotNull(playbackGate).clamp(NarrationGatePosition(index,offset)).segment; offset = 0 }
             if (!playing) { onState(false); return }
         }
-        foregroundPlayback = foregroundPlayback ?: NarrationWorkPriority.beginInteractive()
+        foregroundPlayback = foregroundPlayback ?: NarrationWorkPriority.beginPlayback()
         onState(true)
         publishProgress(NarrationPlaybackPhase.BUFFERING)
         if (playerReady) {
@@ -1043,18 +1047,26 @@ class LessonNarrationController(
     fun settingsChanged() = onMain {
         if (closed) return@onMain
         val previous = settings
+        val previousProfile = generationProfile
+        generationProfile = NarrationSettingsRepository.generationProfile(appContext)
         settings = NarrationSettingsRepository.forLanguage(appContext, language)
         if (!settings.enabled) {
             stopInternal(releaseNeuralResources = true, phase = NarrationPlaybackPhase.UNAVAILABLE)
             return@onMain
         }
         if (settings.engine != previous.engine || settings.kokoroVoice != previous.kokoroVoice ||
-            settings.androidVoice != previous.androidVoice
+            settings.androidVoice != previous.androidVoice ||
+            (settings.engine != NarrationEngine.ANDROID && generationProfile != previousProfile)
         ) {
             if (incorrectFeedback != null) finishIncorrectFeedback(restoreWaiting = true, prepareOriginal = false)
             configuration++
             KokoroEngineCoordinator.cancel(this)
             english?.cancelCurrentRun()
+            if (generationProfile != previousProfile) {
+                // Stop the old voice's duration/G2P requests as well. The metadata
+                // files remain valid and are reused if this profile is selected again.
+                releaseWordAlignment()
+            }
             pending.clear()
             releaseSynthesisCpu()
             watchdogs.values.forEach(main::removeCallbacks)
@@ -1154,7 +1166,7 @@ class LessonNarrationController(
         if (segment.file?.isFile == true) {
             if (feedback != null && next == feedback.index && trackWords && !segment.usedAndroidTts) {
                 prepareWordAlignment(Synthesis(generation, configuration, next, segment.text,
-                    requireNotNull(segment.file), settings, feedback.token))
+                    requireNotNull(segment.file), settings, generationProfile, feedback.token))
             }
             if (playing && next == (feedback?.index ?: index) && player == null &&
                 ((feedback != null) == (incorrectFeedback != null))) preparePlayer(segment, feedback)
@@ -1167,7 +1179,7 @@ class LessonNarrationController(
         val request = Synthesis(generation, configuration, next, segment.text,
             File(session, configuration.toString() + "_" + next +
                 (feedback?.let { "_guide_${it.token}" } ?: "") + ".wav"),
-            settings, feedback?.token)
+            settings, generationProfile, feedback?.token)
         val timeout = Runnable {
             if (isCurrent(request) && requestPending(request)?.contains(next) == true)
                 synthesisFailed(request, s(R.string.narration_engine_timeout))
@@ -1683,6 +1695,8 @@ class LessonNarrationController(
         // The saved selection wins immediately, even before its main-thread observer
         // invalidates queued requests. AUTO and Kokoro both use the neural pipeline.
         NarrationSettingsRepository.isEngineAllowed(appContext, request.settings.engine) &&
+        (request.settings.engine == NarrationEngine.ANDROID ||
+            NarrationSettingsRepository.isGenerationProfileCurrent(appContext, request.profile)) &&
         request.generation == generation && request.configuration == configuration &&
         (request.feedbackToken == null || incorrectFeedback?.let { it.token == request.feedbackToken && !it.finished } == true)
     private fun fail(message: String) {

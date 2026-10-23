@@ -23,7 +23,7 @@ class NarrationWorkPriorityTest {
         assertFalse(NarrationWorkPriority.isBusy)
     }
 
-    @Test fun aWorkerRegisteredDuringPlaybackIsInterruptedImmediately() {
+    @Test fun aWorkerRegisteredDuringCurrentPagePreparationIsInterruptedImmediately() {
         val audio = NarrationWorkPriority.beginInteractive()
         var interrupted = false
         val listener = NarrationWorkPriority.onPreempt { interrupted = true }
@@ -37,7 +37,7 @@ class NarrationWorkPriorityTest {
     }
 
     @Test fun cacheMaintenanceRefusesToStartDuringReaderPlayback() {
-        val reader = NarrationWorkPriority.beginInteractive()
+        val reader = NarrationWorkPriority.beginPlayback()
         try {
             org.junit.Assert.assertNull(NarrationWorkPriority.beginMaintenanceIfIdle())
         } finally {
@@ -57,7 +57,7 @@ class NarrationWorkPriorityTest {
             assertEquals(1, interrupted)
             org.junit.Assert.assertNull(NarrationWorkPriority.beginMaintenanceIfIdle())
             // A reader starting at this point makes further deletion ineligible.
-            val reader = NarrationWorkPriority.beginInteractive()
+            val reader = NarrationWorkPriority.beginPlayback()
             try {
                 assertFalse(NarrationWorkPriority.isMaintenanceExclusive)
             } finally {
@@ -79,7 +79,7 @@ class NarrationWorkPriorityTest {
         val maintenance = requireNotNull(NarrationWorkPriority.beginMaintenanceIfIdle())
         try {
             assertTrue(NarrationWorkPriority.runMaintenanceStep { filesTouched++ })
-            val reader = NarrationWorkPriority.beginInteractive()
+            val reader = NarrationWorkPriority.beginPlayback()
             try {
                 assertFalse(NarrationWorkPriority.runMaintenanceStep { filesTouched++ })
             } finally {
@@ -111,5 +111,30 @@ class NarrationWorkPriorityTest {
             audio.close()
         }
         assertFalse(NarrationWorkPriority.isBusy)
+    }
+
+    @Test fun cachedPlaybackAllowsLimitedGenerationButStillProtectsFilesAndHeavyWork() {
+        var interruptions = 0
+        val listener = NarrationWorkPriority.onPreempt { interruptions++ }
+        val playback = NarrationWorkPriority.beginPlayback()
+        val secondPlayback = NarrationWorkPriority.beginPlayback()
+        try {
+            assertFalse(NarrationWorkPriority.isBusy)
+            assertEquals(0, interruptions)
+            org.junit.Assert.assertNull(NarrationWorkPriority.beginMaintenanceIfIdle())
+            val compiler = NarrationWorkPriority.beginInteractive()
+            try {
+                assertTrue(NarrationWorkPriority.isBusy)
+                assertEquals(1, interruptions)
+            } finally { compiler.close() }
+            assertFalse(NarrationWorkPriority.isBusy)
+            playback.close(); playback.close()
+            org.junit.Assert.assertNull(NarrationWorkPriority.beginMaintenanceIfIdle())
+        } finally {
+            secondPlayback.close(); playback.close(); listener.close()
+        }
+        val maintenance = NarrationWorkPriority.beginMaintenanceIfIdle()
+        org.junit.Assert.assertNotNull(maintenance)
+        maintenance?.close()
     }
 }

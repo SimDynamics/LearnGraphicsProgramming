@@ -14,14 +14,21 @@ internal object NarrationCpuBudget {
         override fun currentTid(): Long { ensureLoaded(); return nativeCurrentTid() }
         override fun allowedCpus(): List<Int> { ensureLoaded(); return nativeAllowedCpus().toList() }
         override fun setAllowedCpus(cpus: List<Int>) { ensureLoaded(); nativeSetAllowedCpus(cpus.toIntArray()) }
+        override fun restoreAllowedCpus(cpus: List<Int>, recoverCurrentCpuset: Boolean): List<Int> {
+            ensureLoaded()
+            return nativeRestoreAllowedCpus(cpus.toIntArray(), recoverCurrentCpuset).toList()
+        }
     }
     @Volatile var lastSelection: NarrationCpuSelection? = null
         private set
-    private val scopes = NarrationCpuScopes(affinity, ::performance) { selection ->
+    private val scopes = NarrationCpuScopes(affinity, ::performance, report = { selection ->
         lastSelection = selection
         Log.i("NarrationCpuBudget", "Background affinity verified: allowed=${selection.allowed}, " +
             "selected=${selection.selected}, ranking=${selection.ranking}")
-    }
+    }, restored = { original, actual ->
+        Log.i("NarrationCpuBudget", "Narration CPU restoration followed Android's changed cpuset: " +
+            "previous=$original, restored=$actual")
+    })
 
     fun allowedCpus(): List<Int> = try {
         affinity.allowedCpus().distinct().sorted().also {
@@ -63,4 +70,5 @@ internal object NarrationCpuBudget {
     private external fun nativeCurrentTid(): Long
     private external fun nativeAllowedCpus(): IntArray
     private external fun nativeSetAllowedCpus(cpus: IntArray)
+    private external fun nativeRestoreAllowedCpus(cpus: IntArray, recoverCurrentCpuset: Boolean): IntArray
 }

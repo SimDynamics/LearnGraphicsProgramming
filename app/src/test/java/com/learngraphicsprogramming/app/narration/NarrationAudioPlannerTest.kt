@@ -7,7 +7,7 @@ class NarrationAudioPlannerTest {
     private val programming = NarrationAudioPlan.ROUTES.first()
     private val math = NarrationAudioPlan.ROUTES.last()
     private fun page(route: String, index: Int, course: String = "course1", text: String = "$route page $index") =
-        NarrationCurriculum.Page(route, course, "unit1", "${course}__unit1__lesson1", index,
+        NarrationCurriculum.Page(route, course, "${course}__unit1", "${course}__unit1__lesson1", index,
             listOf(NarrationCurriculum.Sentence(text, NarrationLanguage.SPANISH, "ef_dora", "$route/$course/unit1/lesson1/${index + 1}")))
     private fun catalog(pages: List<NarrationCurriculum.Page>): (String, String?) -> Sequence<NarrationCurriculum.Page> =
         { route, course -> pages.asSequence().filter { it.routeId == route && (course == null || it.courseId == course) } }
@@ -34,8 +34,8 @@ class NarrationAudioPlannerTest {
         val result = plan.candidates(queue, catalog(pages)).toList()
         assertEquals(listOf(target.identity, pages[1].identity, pages[3].identity, pages[4].identity, pages[0].identity),
             result.map { it.page.identity })
-        assertEquals(listOf(NarrationAudioPriority.CURRENT_PAGE, NarrationAudioPriority.COURSE,
-            NarrationAudioPriority.COURSE, NarrationAudioPriority.GENERAL, NarrationAudioPriority.GENERAL), result.map { it.priority })
+        assertEquals(listOf(NarrationAudioPriority.CURRENT_PAGE, NarrationAudioPriority.UNIT,
+            NarrationAudioPriority.UNIT, NarrationAudioPriority.GENERAL, NarrationAudioPriority.GENERAL), result.map { it.priority })
         assertEquals(result.size, result.map { it.page.identity }.distinct().size)
     }
 
@@ -246,5 +246,52 @@ class NarrationAudioPlannerTest {
         plan.completed(old, generated = true)
         val restored = NarrationAudioPlan(plan.snapshot().encode())
         assertEquals(pages[0].identity, restored.candidates(null, catalog(pages)).first().page.identity)
+    }
+
+    @Test fun selectedUnitIsPreparedBeforeTheRestOfItsCourseAndRouteWithoutSkippingEarlierPages() {
+        val firstUnit = page(programming, 0)
+        val selected = page(programming, 1).copy(unitId = "course1__unit2", lessonId = "course1__unit2__lesson1")
+        val selectedEarlier = selected.copy(pageIndex = 0)
+        val nextCourse = page(programming, 0, "course2")
+        val otherRoute = page(math, 0)
+        val pages = listOf(firstUnit, selectedEarlier, selected, nextCourse, otherRoute)
+        val plan = NarrationAudioPlan()
+        plan.enter(programming, "course1", unitId = selected.unitId)
+
+        val result = plan.candidates(null, catalog(pages)).toList()
+        assertEquals(listOf(selectedEarlier, selected, firstUnit, nextCourse, otherRoute), result.map { it.page })
+        assertEquals(listOf(NarrationAudioPriority.UNIT, NarrationAudioPriority.UNIT,
+            NarrationAudioPriority.COURSE, NarrationAudioPriority.GENERAL, NarrationAudioPriority.GENERAL),
+            result.map { it.priority })
+        val restored = NarrationAudioPlan(plan.snapshot().encode())
+        assertEquals(selected.unitId, restored.snapshot().context.unitId)
+        assertEquals(result.map { it.page }, restored.candidates(null, catalog(pages)).map { it.page }.toList())
+    }
+
+    @Test fun currentPagePreemptsItsUnitButItsRemainingPagesKeepTheirOriginalOrder() {
+        val firstUnit = page(programming, 0)
+        val later = page(programming, 2).copy(unitId = "course1__unit2", lessonId = "course1__unit2__lesson1")
+        val earlier = later.copy(pageIndex = 0)
+        val middle = later.copy(pageIndex = 1)
+        val plan = NarrationAudioPlan()
+        val queue = NarrationPageQueue.Snapshot(1L, later.sentences, emptySet())
+        plan.enter(programming, later.courseId, later.lessonId, later.pageIndex, queue.revision)
+        val result = plan.candidates(queue, catalog(listOf(firstUnit, earlier, middle, later))).toList()
+        assertEquals(listOf(later.identity, earlier.identity, middle.identity, firstUnit.identity), result.map { it.page.identity })
+        assertEquals(NarrationAudioPriority.CURRENT_PAGE, result.first().priority)
+        assertEquals(later.unitId, plan.snapshot().context.unitId)
+    }
+
+    @Test fun changingOnlyTheUnitPreemptsTheOldScanAndPreservesOldFormatCompatibility() {
+        val plan = NarrationAudioPlan()
+        plan.enter(programming, "course1", unitId = "course1__unit1")
+        val iterator = plan.candidates(null, catalog(listOf(page(programming, 0), page(programming, 1)))).iterator()
+        val old = iterator.next()
+        plan.enter(programming, "course1", unitId = "course1__unit2")
+        assertFalse(iterator.hasNext())
+        assertFalse(plan.completed(old, generated = true))
+        val legacy = org.json.JSONObject(plan.snapshot().encode())
+        legacy.getJSONObject("context").remove("unit")
+        assertNull(NarrationAudioPlan(legacy.toString()).snapshot().context.unitId)
     }
 }

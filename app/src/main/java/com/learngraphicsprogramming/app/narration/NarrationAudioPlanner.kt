@@ -7,7 +7,7 @@ import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 import org.json.JSONObject
 
-internal enum class NarrationAudioPriority { CURRENT_PAGE, COURSE, GENERAL }
+internal enum class NarrationAudioPriority { CURRENT_PAGE, UNIT, COURSE, GENERAL }
 
 /** Scheduling metadata only; audio validity and completed speech remain owned by the real cache. */
 internal class NarrationAudioPlan(
@@ -17,13 +17,14 @@ internal class NarrationAudioPlan(
 ) {
     data class Selection(val routeId: String? = null, val courseId: String? = null,
                          val lessonId: String? = null, val pageIndex: Int? = null,
-                         val pageRevision: Long? = null)
+                         val pageRevision: Long? = null, val unitId: String? = null)
     data class Snapshot(val epoch: Long, val context: Selection, val nextRoute: String,
                         val cursors: Map<String, String>) {
         fun encode(): String = JSONObject().put("format", 1).put("epoch", epoch)
             .put("context", JSONObject().put("route", context.routeId ?: JSONObject.NULL)
                 .put("course", context.courseId ?: JSONObject.NULL)
                 .put("lesson", context.lessonId ?: JSONObject.NULL)
+                .put("unit", context.unitId ?: JSONObject.NULL)
                 .put("page", context.pageIndex ?: JSONObject.NULL)
                 .put("pageRevision", context.pageRevision ?: JSONObject.NULL))
             .put("nextRoute", nextRoute).put("cursors", JSONObject(cursors)).toString()
@@ -39,8 +40,8 @@ internal class NarrationAudioPlan(
     @Synchronized fun isCurrent(epoch: Long): Boolean = current.epoch == epoch
 
     fun enter(routeId: String? = null, courseId: String? = null, lessonId: String? = null,
-              pageIndex: Int? = null, pageRevision: Long? = null): Snapshot {
-        val requested = normalize(Selection(routeId, courseId, lessonId, pageIndex, pageRevision))
+              pageIndex: Int? = null, pageRevision: Long? = null, unitId: String? = null): Snapshot {
+        val requested = normalize(Selection(routeId, courseId, lessonId, pageIndex, pageRevision, unitId))
         val next = synchronized(this) {
             val selection = if (requested.pageRevision == null &&
                 requested.copy(pageRevision = current.context.pageRevision) == current.context)
@@ -121,7 +122,7 @@ internal class NarrationAudioPlan(
             val queue = pageQueue?.takeIf { it.sentences.isNotEmpty() }
             val currentPage = if (queue != null && selection.pageRevision == queue.revision) {
                 NarrationCurriculum.Page(selection.routeId, selection.courseId.orEmpty(),
-                    selection.lessonId.substringBeforeLast("__", ""), selection.lessonId, selection.pageIndex, queue.sentences)
+                    selection.unitId.orEmpty(), selection.lessonId, selection.pageIndex, queue.sentences)
             } else {
                 catalog(selection.routeId, selection.courseId).firstOrNull {
                     it.lessonId == selection.lessonId && it.pageIndex == selection.pageIndex
@@ -136,6 +137,13 @@ internal class NarrationAudioPlan(
         }
         if (selection.routeId != null && selection.courseId != null &&
             !isCoursePaused(selection.routeId, selection.courseId)) {
+            if (selection.unitId != null) {
+                for (page in catalog(selection.routeId, selection.courseId)) {
+                    if (!isCurrent(start.epoch)) return@sequence
+                    if (page.unitId == selection.unitId)
+                        planned(page, NarrationAudioPriority.UNIT)?.let { yield(it) }
+                }
+            }
             for (page in catalog(selection.routeId, selection.courseId)) {
                 if (!isCurrent(start.epoch)) return@sequence
                 planned(page, NarrationAudioPriority.COURSE)?.let { yield(it) }
@@ -164,9 +172,11 @@ internal class NarrationAudioPlan(
             if (value.routeId !in ROUTES) return Selection()
             val lesson = value.lessonId?.takeIf { it.isNotBlank() }
             val index = value.pageIndex?.takeIf { lesson != null && it >= 0 }
+            val unit = value.unitId?.takeIf { it.isNotBlank() }
+                ?: lesson?.substringBeforeLast("__", "")?.takeIf { it.isNotBlank() }
             return value.copy(courseId = value.courseId?.takeIf { it.isNotBlank() }, lessonId = lesson,
                 pageIndex = index,
-                pageRevision = value.pageRevision?.takeIf { index != null && it >= 0L })
+                pageRevision = value.pageRevision?.takeIf { index != null && it >= 0L }, unitId = unit)
         }
         private fun decode(value: String): Snapshot {
             val json = JSONObject(value)
@@ -175,7 +185,7 @@ internal class NarrationAudioPlan(
             fun string(name: String) = (spec.opt(name) as? String)?.takeIf { it.isNotBlank() }
             val selection = normalize(Selection(string("route"), string("course"), string("lesson"),
                 if (spec.isNull("page")) null else spec.getInt("page"),
-                if (spec.isNull("pageRevision")) null else spec.getLong("pageRevision")))
+                if (spec.isNull("pageRevision")) null else spec.getLong("pageRevision"), string("unit")))
             val cursorJson = json.optJSONObject("cursors") ?: JSONObject()
             val cursors = ROUTES.mapNotNull { route -> (cursorJson.opt(route) as? String)?.let { route to it } }.toMap()
             return Snapshot(json.getLong("epoch").coerceAtLeast(0L), selection,
@@ -191,8 +201,9 @@ internal object NarrationAudioPlanner {
     private val stores = mutableMapOf<File, NarrationAudioPlan>()
     /** Optional scheduling must never prevent navigation, page rendering or playback. */
     fun enter(context: Context, routeId: String? = null, courseId: String? = null,
-              lessonId: String? = null, pageIndex: Int? = null, pageRevision: Long? = null) {
-        runCatching { store(context).enter(routeId, courseId, lessonId, pageIndex, pageRevision) }
+              lessonId: String? = null, pageIndex: Int? = null, pageRevision: Long? = null,
+              unitId: String? = null) {
+        runCatching { store(context).enter(routeId, courseId, lessonId, pageIndex, pageRevision, unitId) }
             .onFailure { KokoroNarrationDiagnostics.event(context, "KokoroBackground",
                 "Could not persist the latest narration scheduling context", it) }
     }
