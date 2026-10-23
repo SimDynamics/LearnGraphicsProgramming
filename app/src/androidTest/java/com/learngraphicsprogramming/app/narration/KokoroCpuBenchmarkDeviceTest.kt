@@ -6,6 +6,13 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Process
 import android.os.SystemClock
+import android.content.Intent
+import android.view.WindowManager
+import androidx.test.core.app.ActivityScenario
+import com.learngraphicsprogramming.app.CoursesActivity
+import com.learngraphicsprogramming.app.AppearanceSettingsRepository
+import org.junit.Before
+import org.junit.After
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.learngraphicsprogramming.app.BuildConfig
@@ -32,6 +39,17 @@ class KokoroCpuBenchmarkDeviceTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
     private val arguments = InstrumentationRegistry.getArguments()
+    private var scenario: ActivityScenario<CoursesActivity>? = null
+
+    @Before fun keepQaVisibleWithoutChangingDeviceSettings() {
+        assertEquals(QA_PACKAGE, context.packageName)
+        scenario = ActivityScenario.launch<CoursesActivity>(Intent(context, CoursesActivity::class.java)
+            .putExtra("routeId", AppearanceSettingsRepository.ROUTE_PROGRAMMING)).also { host ->
+            host.onActivity { it.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) }
+        }
+    }
+
+    @After fun releaseQaWindow() { scenario?.close() }
 
     @Test fun benchmarkInstalledPinnedModelAndActualWorkerCpuMasks() {
         assertEquals("Never benchmark the ordinary or Work application", QA_PACKAGE, context.packageName)
@@ -42,8 +60,12 @@ class KokoroCpuBenchmarkDeviceTest {
         }
         val root = arguments.getString("modelRoot")?.let(::File)
             ?: File(requireNotNull(context.getExternalFilesDir(null)), "kokoro/${KokoroModelManifest.revision}")
+        val voice = benchmarkVoice()
+        val source = benchmarkSource()
+        val runCount = arguments.getString("benchmarkRuns", "4").toInt().also { require(it in 2..4) }
+        val writeEvidence = arguments.getString("benchmarkWriteEvidence", "true").toBooleanStrict()
         val resources = KokoroModelManifest.sharedArtifacts + KokoroModelManifest.resources(NarrationLanguage.SPANISH) +
-            requireNotNull(KokoroVoiceCatalog.find(VOICE)).artifact
+            requireNotNull(KokoroVoiceCatalog.find(voice)).artifact
         val beforeFiles = resources.associate { artifact ->
             val file = File(root, artifact.fileName)
             assertTrue("The pinned installed resource is required; nothing is downloaded: ${artifact.fileName}", file.isFile)
@@ -53,7 +75,7 @@ class KokoroCpuBenchmarkDeviceTest {
             artifact.fileName to fingerprint
         }
         val lexicon = SpanishFluidG2P.loadLexicon(File(root, "es_lexicon_cache.json"))
-        val phonemes = SpanishFluidG2P.phonemize(SOURCE, lexicon)
+        val phonemes = MixedSpanishG2P.phonemizePrepared(source, lexicon)
         assertTrue(phonemes.isNotBlank() && phonemes.length < KokoroModelManifest.maximumPhonemeTokens)
         val caller = requireNotNull(tasks()[Process.myTid()])
         val profiles = mutableListOf(Profile("current-page", true, null), Profile("automatic-background", false, 2))
@@ -69,19 +91,19 @@ class KokoroCpuBenchmarkDeviceTest {
             require(it in setOf(1, 2, 4, 8)) { "The A/B fallback experiment permits one, two, four or eight threads" }
         }
         val records = JSONArray()
-        val output = File(requireNotNull(context.getExternalFilesDir(null)), "cpu-planning-qa").apply { mkdirs() }
+        val output = File(requireNotNull(context.getExternalFilesDir(null)), "cpu-planning-qa")
         val result = JSONObject().put("phase", phase).put("package", context.packageName)
             .put("device", Build.MODEL).put("fingerprint", Build.FINGERPRINT)
             .put("abi", JSONArray(Build.SUPPORTED_ABIS.toList())).put("sdk", Build.VERSION.SDK_INT)
             .put("runtimeAvailableProcessors", Runtime.getRuntime().availableProcessors())
-            .put("callerAllowedCpus", caller.allowed).put("voice", VOICE)
+            .put("callerAllowedCpus", caller.allowed).put("voice", voice)
             .put("sampleRate", KokoroModelManifest.sampleRate).put("modelRevision", KokoroModelManifest.revision)
             .put("phonemeSha256", digest(phonemes.toByteArray(Charsets.UTF_8)))
-            .put("phonemeCount", phonemes.length).put("source", SOURCE)
+            .put("phonemeCount", phonemes.length).put("source", source)
             .put("memoryBefore", memory()).put("filesBefore", JSONObject(beforeFiles))
             .put("profiles", records)
             .put("scope", "Actual Android process CPU masks and main-handler latency; heartbeat gaps are not rendered-frame measurements")
-        fun persist() = File(output, "benchmark-$phase.json").writeText(result.toString(2))
+        fun persist() { if (writeEvidence) { output.mkdirs(); File(output, "benchmark-$phase.json").writeText(result.toString(2)) } }
         persist()
         var reference: FloatArray? = null
         try {
@@ -121,7 +143,7 @@ class KokoroCpuBenchmarkDeviceTest {
                             .put("newSessionThreads", snapshotJson(newSessionThreads))
                             .put("identifiedNativePoolThreads", JSONArray(nativePools.map { it.json() }))
                             .put("nativePoolIdentification", "New session TIDs named onnx/xnn/ort/pthreadpool or inheriting the inference caller name; unrelated ART/GC/JIT threads are not attributed to inference")
-                        repeat(4) { run ->
+                        repeat(runCount) { run ->
                             val before = tasks()
                             val sampler = CpuSampler(before)
                             val heartbeat = MainHeartbeat()
@@ -131,7 +153,7 @@ class KokoroCpuBenchmarkDeviceTest {
                                 sampler.start()
                                 heartbeat.start()
                                 val start = SystemClock.elapsedRealtimeNanos()
-                                pcm = engine.synthesizePhonemes(phonemes, VOICE, 1f)
+                                pcm = engine.synthesizePhonemes(phonemes, voice, 1f)
                                 elapsed = (SystemClock.elapsedRealtimeNanos() - start) / 1_000_000.0
                             } finally {
                                 heartbeat.close()
@@ -187,6 +209,12 @@ class KokoroCpuBenchmarkDeviceTest {
                 val measured = (1 until samples.length()).map { samples.getJSONObject(it).getDouble("elapsedMillis") }.sorted()
                 record.put("measuredMedianMillis", measured[measured.size / 2])
                 record.put("measuredMeanMillis", measured.average())
+                measurement("KOKORO_HONOR_PROFILE " + JSONObject().put("phase", phase).put("profile", profile.name)
+                    .put("voice", voice).put("fallbackThreads", if (profile.name == "current-page") 1 else fallbackThreads).put("phonemes", phonemes.length)
+                    .put("setupMs", record.getDouble("sessionCreationMillis"))
+                    .put("runsMs", JSONArray((0 until samples.length()).map { samples.getJSONObject(it).getDouble("elapsedMillis") }))
+                    .put("audioSeconds", samples.getJSONObject(0).getDouble("audioSeconds"))
+                    .put("callerMask", caller.allowed).put("xnnpack", record.getBoolean("usesXnnpack")))
                 persist()
             }
         } finally {
@@ -198,6 +226,79 @@ class KokoroCpuBenchmarkDeviceTest {
                 assertEquals("Inference must not modify installed model, voice or dictionaries: $name", before.toString(), afterFiles[name]?.toString())
             }
         }
+    }
+
+    /** Exactly the production foreground/background factory, with no generated cache files. */
+    @Test fun benchmarkProductionCoordinatorProfilesAndSessionReuse() {
+        assertEquals(QA_PACKAGE, context.packageName)
+        assertNotEquals(Looper.getMainLooper(), Looper.myLooper())
+        val root = File(requireNotNull(context.getExternalFilesDir(null)), "kokoro/${KokoroModelManifest.revision}")
+        val voice = benchmarkVoice()
+        val source = benchmarkSource()
+        val lexicon = SpanishFluidG2P.loadLexicon(File(root, "es_lexicon_cache.json"))
+        val phonemes = MixedSpanishG2P.phonemizePrepared(source, lexicon)
+        require(phonemes.isNotBlank() && phonemes.length < KokoroModelManifest.maximumPhonemeTokens)
+        val original = NarrationCpuBudget.allowedCpus()
+        val owner = Any()
+        KokoroEngineCoordinator.releaseIfIdle()
+        try {
+            val profiles = arguments.getString("coordinatorProfiles", "foreground,background,foreground")
+                .split(',').map { when (it) { "foreground" -> true; "background" -> false; else -> error("Unknown production profile") } }
+            profiles.forEachIndexed { pass, foreground ->
+                var prior: KokoroOnnxEngine? = null
+                repeat(2) { run ->
+                    val before = tasks()
+                    val acquire = SystemClock.elapsedRealtimeNanos()
+                    KokoroEngineCoordinator.withEngine(owner, root, { false }, foreground = foreground) { engine ->
+                        val setupMs = (SystemClock.elapsedRealtimeNanos() - acquire) / 1_000_000.0
+                        if (run > 0) assertSame("Same profile reuses its production session", prior, engine)
+                        prior = engine
+                        val mask = NarrationCpuBudget.allowedCpus()
+                        if (!foreground) assertTrue(mask.size in 1..2) else assertEquals(original, mask)
+                        val sampler = CpuSampler(tasks())
+                        lateinit var pcm: FloatArray
+                        val start = SystemClock.elapsedRealtimeNanos()
+                        try {
+                            sampler.start()
+                            pcm = engine.synthesizePhonemes(phonemes, voice, 1f)
+                        } finally { sampler.close() }
+                        val inferenceMs = (SystemClock.elapsedRealtimeNanos() - start) / 1_000_000.0
+                        assertTrue(pcm.isNotEmpty() && pcm.all { it.isFinite() })
+                        assertTrue(sqrt(pcm.sumOf { it.toDouble() * it } / pcm.size) > .0001)
+                        val owned = tasks().values.filter { it.tid !in before && nativePoolName(it.name, before.getValue(Process.myTid()).name) }
+                        if (!foreground) owned.forEach { assertEquals(mask, parseCpuMask(it.allowed)) }
+                        measurement("KOKORO_HONOR_PRODUCTION " + JSONObject().put("pass", pass).put("run", run)
+                            .put("foreground", foreground).put("voice", voice).put("phonemes", phonemes.length)
+                            .put("sourceKind", arguments.getString("benchmarkSource", "short"))
+                            .put("setupMs", setupMs).put("inferenceMs", inferenceMs)
+                            .put("audioSeconds", pcm.size.toDouble() / KokoroModelManifest.sampleRate)
+                            .put("xnnpack", engine.usesXnnpack).put("nnapi", engine.usesNnapi)
+                            .put("callerMask", JSONArray(mask)).put("newNativePools", JSONArray(owned.map { it.json() })))
+                    }
+                    assertEquals("Foreground permissions restored after each production lease", original, NarrationCpuBudget.allowedCpus())
+                }
+            }
+        } finally { KokoroEngineCoordinator.releaseIfIdle() }
+    }
+
+    private fun measurement(value: String) {
+        println(value)
+        instrumentation.sendStatus(2, android.os.Bundle().apply { putString("stream", value + "\n") })
+    }
+
+    private fun benchmarkVoice(): String = arguments.getString("benchmarkVoice", VOICE).also {
+        require(KokoroVoiceCatalog.find(it)?.language == NarrationLanguage.SPANISH) { "A pinned Spanish voice is required" }
+    }
+
+    private fun benchmarkSource(): String = when (arguments.getString("benchmarkSource", "short")) {
+        "short" -> SOURCE
+        "curricular" -> {
+            val lesson = JSONObject(context.assets.open("content/es/programming/cpp_fundamentals/programas_y_ejecucion/lesson_primer_programa_y_salida.json")
+                .bufferedReader().use { it.readText() })
+            val script = LessonNarrationScript.page(lesson, 0, NarrationLanguage.SPANISH, forKokoro = true)
+            NarrationSegments.sentences(script.texts).filter { it.length in 180..320 }.maxBy { it.length }
+        }
+        else -> error("Unknown benchmark source")
     }
 
     private data class Profile(val name: String, val accelerator: Boolean, val threads: Int?)

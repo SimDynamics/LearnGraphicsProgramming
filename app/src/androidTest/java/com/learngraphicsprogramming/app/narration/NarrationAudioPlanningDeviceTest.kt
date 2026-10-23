@@ -266,13 +266,26 @@ class NarrationAudioPlanningDeviceTest {
         assertFalse(NarrationSettingsRepository.get(actual).enabled)
     }
 
-    @Test fun changingVoiceCancelsRealNativeInferenceWithoutDiscardingCompletedAudio() {
+    @Test fun changingVoiceCancelsRealNativeInferenceWithoutDiscardingCompletedAudio() =
+        exerciseProfileChange(NarrationLanguage.SPANISH)
+
+    @Test fun changingLanguageCancelsRealNativeInferenceWithoutDiscardingCompletedAudio() =
+        exerciseProfileChange(NarrationLanguage.FRENCH)
+
+    private fun exerciseProfileChange(nextLanguage: NarrationLanguage) {
         requireInstalledResources()
         val store = KokoroModelStore(isolated)
         val modelRoot = try { store.directory() } finally { store.close() }
-        val nextVoice = KokoroVoiceCatalog.voices.firstOrNull {
-            it.language == NarrationLanguage.SPANISH && it.id != VOICE && File(modelRoot, it.artifact.fileName).isFile
-        } ?: error("Install a second original Spanish voice before this real profile-switch acceptance")
+        val requestedVoice = if (nextLanguage == NarrationLanguage.FRENCH) "ff_siwis"
+            else InstrumentationRegistry.getArguments().getString("nextVoice")
+        val nextVoice = if (requestedVoice != null) requireNotNull(KokoroVoiceCatalog.find(requestedVoice)).also {
+            require(it.language == nextLanguage && it.id != VOICE && File(modelRoot, it.artifact.fileName).isFile)
+        } else KokoroVoiceCatalog.voices.firstOrNull {
+            it.language == nextLanguage && it.id != VOICE && File(modelRoot, it.artifact.fileName).isFile
+        } ?: error("Install a second original voice before this real profile-switch acceptance")
+        KokoroModelManifest.resources(nextLanguage).forEach {
+            assertTrue("Use only existing verified language resources", KokoroModelManifest.verify(File(modelRoot, it.fileName), it))
+        }
         val retained = "La grabación terminada conserva la voz seleccionada."
         val long = "La narración mantiene cada palabra y conserva el orden de lectura. ".repeat(5).trim()
         val first = page(programming, 0, retained).let { base -> base.copy(sentences = base.sentences +
@@ -293,6 +306,7 @@ class NarrationAudioPlanningDeviceTest {
         }
         val kept = requireNotNull(KokoroNarrationCache.lookup(isolated, "es", VOICE, retained))
         val original = audioIdentity(kept)
+        if (nextLanguage != NarrationLanguage.SPANISH) NarrationSettingsRepository.saveLanguage(isolated, nextLanguage)
         NarrationSettingsRepository.saveKokoroVoice(isolated, nextVoice.id)
         // This worker is intentionally test-owned, not service-owned. The hot-path
         // profile guard must cancel even without the main-thread preference observer.
@@ -302,13 +316,20 @@ class NarrationAudioPlanningDeviceTest {
         assertEquals(KokoroBackgroundNarrationWorker.Outcome.MORE, outcome.get())
         assertEquals(original, audioIdentity(kept))
         assertNull(KokoroNarrationCache.lookup(isolated, "es", VOICE, long))
-        val latest = page(programming, 0, "La voz actual continúa sin borrar la anterior.").let { base ->
-            base.copy(sentences = base.sentences.map { it.copy(voice = nextVoice.id) })
+        val latestText = if (nextLanguage == NarrationLanguage.FRENCH)
+            "La langue actuelle conserve la narration." else "La voz actual conserva la anterior."
+        val latest = page(programming, 0, latestText).let { base ->
+            base.copy(sentences = base.sentences.map { it.copy(voice = nextVoice.id, language = nextLanguage) })
         }
         pages.clear(); pages += latest
         val before = generationEvents().size
-        assertEquals(KokoroBackgroundNarrationWorker.Outcome.COMPLETE, currentWorker.runSlice { active.get() })
-        assertNotNull(KokoroNarrationCache.lookup(isolated, "es", nextVoice.id, latest.sentences.single().text))
+        val latestOutcome = currentWorker.runSlice { active.get() }
+        if (latestOutcome != KokoroBackgroundNarrationWorker.Outcome.COMPLETE) {
+            fail("New language=$nextLanguage voice=${nextVoice.id}; outcome=$latestOutcome; " +
+                "state=${KokoroNarrationDiagnostics.snapshot(isolated)}; " +
+                "events=${File(isolated.filesDir, KokoroNarrationDiagnostics.EVENTS_FILE).readText()}")
+        }
+        assertNotNull(KokoroNarrationCache.lookup(isolated, nextLanguage.tag, nextVoice.id, latest.sentences.single().text))
         assertEquals(listOf(NarrationPageQueue.hash(latest.sentences.single())),
             generationEvents().drop(before).map { it.getString("hash") })
         assertEquals(original, audioIdentity(kept))
