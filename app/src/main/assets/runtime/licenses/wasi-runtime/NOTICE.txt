@@ -1,0 +1,49 @@
+WASI runtime archive: third-party notices
+
+These notices apply only to the third-party material in
+app/src/main/assets/runtime/wasi-runtime.zip. They do not license the
+LearnGraphicsProgramming application's own source code or curriculum.
+
+Archive SHA-256:
+0f338c64c03c22b196f426767925aa135205287600a03948bae0235e6003678f
+
+The existing archive contains a WASI sysroot, C and C++ static libraries,
+Clang resource headers, and compiler-rt builtins. It is a previously
+generated, modified distribution; its exact original build recipe and
+source revisions are not established by these notices. A directory or
+manifest name containing "wasi-sdk-34" is not proof that its bytes are an
+unmodified official WASI SDK 34 release.
+
+Observed component notices are retained in the archive's source headers.
+For example, libc++ headers identify the LLVM Project and the license
+"Apache-2.0 WITH LLVM-exception". The main libc++ configuration reports
+_LIBCPP_VERSION 230100; the legacy __cxx03 configuration reports 190100.
+The adjacent files supply complete upstream license and copyright texts
+for those component families, including the LLVM exception previously
+missing from this repository's runtime notices.
+
+Component families and accompanying notices:
+
+- LLVM / Clang / libc++ / libc++abi / compiler-rt: LLVM Project and its
+  contributors; Apache License 2.0 with LLVM Exceptions, plus the legacy
+  notices retained in the respective upstream component license files.
+- wasi-libc changes: Apache License 2.0 with LLVM Exceptions, Apache
+  License 2.0, or MIT, as described in WASI-LIBC-LICENSE.txt.
+- musl: the MIT terms and additional source notices retained in
+  WASI-LIBC-MUSL-COPYRIGHT.txt.
+- Cloudlibc: Nuxi and contributors, BSD-2-Clause.
+- musl-fts: Regents of the University of California, BSD-3-Clause.
+- dlmalloc: Doug Lea's source notice dedicating the implementation to the
+  public domain under CC0.
+- emmalloc: Emscripten Authors; its MIT option and copyright notice are
+  supplied in EMMALLOC-MIT-NOTICE.txt.
+
+The official upstream references and the reason for selecting them are
+recorded in provenance.json. Those references identify the license texts;
+they do not assert that every archive member was built from those exact
+source commits. Per-file notices and copyrights remain applicable.
+
+This notice-only change does not rebuild, execute, modify, or replace the
+runtime archive or any of its members. Keep these notices with any copy
+of this archive. Future repackaging must preserve its own exact source
+revisions, build recipe, license texts, and per-file notices.

@@ -1,0 +1,86 @@
+{
+  "scope": "Third-party notices for app/src/main/assets/runtime/wasi-runtime.zip only",
+  "reviewed_archive": {
+    "sha256": "0f338c64c03c22b196f426767925aa135205287600a03948bae0235e6003678f",
+    "bytes": 9575731,
+    "entries": 2209
+  },
+  "observed_header_identifiers": {
+    "libcxx_main": "_LIBCPP_VERSION 230100",
+    "libcxx_legacy": "_LIBCPP_VERSION 190100",
+    "license": "Apache-2.0 WITH LLVM-exception"
+  },
+  "upstream_reference_context": {
+    "wasi_sdk_tag": "wasi-sdk-34",
+    "wasi_sdk_tree": "5a0bf653a1a06e1c18867567c5937006d3394a69",
+    "llvm_submodule": "895aa2c896ada719451be2e3673c83da8ddf1141",
+    "wasi_libc_submodule": "2e6fb9d8ee0cdf9e431fbcabe8af3115de000a13",
+    "tree_url": "https://github.com/WebAssembly/wasi-sdk/tree/wasi-sdk-34",
+    "purpose": "Pinned official upstream references for license texts and component attribution; not proof of the legacy archive's exact source or build."
+  },
+  "redistribution_basis": "The observed component families have permissive open-source notices (Apache/LLVM exception, MIT, BSD and CC0). Preserve the complete component texts and existing per-file notices.",
+  "limits": [
+    "Exact legacy archive source revisions and original build recipe remain unverified.",
+    "The repository's docs/ADVANCED_CPP_RUNTIME.md describes this archive as a previous modified no-exceptions WASI distribution.",
+    "The main archive is unchanged; these files supplement missing accompanying notices.",
+    "No project-wide license is granted by these third-party notices."
+  ],
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/WebAssembly/wasi-libc/2e6fb9d8ee0cdf9e431fbcabe8af3115de000a13/LICENSE",
+      "name": "wasi-libc/LICENSE"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/WebAssembly/wasi-libc/2e6fb9d8ee0cdf9e431fbcabe8af3115de000a13/LICENSE-APACHE-LLVM",
+      "name": "wasi-libc/LICENSE-APACHE-LLVM"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/WebAssembly/wasi-libc/2e6fb9d8ee0cdf9e431fbcabe8af3115de000a13/LICENSE-APACHE",
+      "name": "wasi-libc/LICENSE-APACHE"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/WebAssembly/wasi-libc/2e6fb9d8ee0cdf9e431fbcabe8af3115de000a13/LICENSE-MIT",
+      "name": "wasi-libc/LICENSE-MIT"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/WebAssembly/wasi-libc/2e6fb9d8ee0cdf9e431fbcabe8af3115de000a13/libc-top-half/musl/COPYRIGHT",
+      "name": "wasi-libc/MUSL-COPYRIGHT"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/llvm/llvm-project/895aa2c896ada719451be2e3673c83da8ddf1141/LICENSE.TXT",
+      "name": "llvm/LICENSE.TXT"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/llvm/llvm-project/895aa2c896ada719451be2e3673c83da8ddf1141/libcxx/LICENSE.TXT",
+      "name": "llvm/LIBCXX-LICENSE.TXT"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/llvm/llvm-project/895aa2c896ada719451be2e3673c83da8ddf1141/libcxxabi/LICENSE.TXT",
+      "name": "llvm/LIBCXXABI-LICENSE.TXT"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/llvm/llvm-project/895aa2c896ada719451be2e3673c83da8ddf1141/compiler-rt/LICENSE.TXT",
+      "name": "llvm/COMPILER-RT-LICENSE.TXT"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/WebAssembly/wasi-libc/2e6fb9d8ee0cdf9e431fbcabe8af3115de000a13/libc-bottom-half/cloudlibc/LICENSE",
+      "name": "wasi-libc/CLOUDLIBC-LICENSE"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/WebAssembly/wasi-libc/2e6fb9d8ee0cdf9e431fbcabe8af3115de000a13/fts/musl-fts/COPYING",
+      "name": "wasi-libc/FTS-COPYING"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/WebAssembly/wasi-libc/2e6fb9d8ee0cdf9e431fbcabe8af3115de000a13/emmalloc/emmalloc.c",
+      "name": "wasi-libc/EMMALLOC-SOURCE-NOTICE"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/llvm/llvm-project/895aa2c896ada719451be2e3673c83da8ddf1141/clang/LICENSE.TXT",
+      "name": "llvm/CLANG-LICENSE.TXT"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/WebAssembly/wasi-libc/2e6fb9d8ee0cdf9e431fbcabe8af3115de000a13/dlmalloc/src/malloc.c",
+      "name": "wasi-libc/DLMALLOC-UPSTREAM-NOTICE"
+    }
+  ]
+}
