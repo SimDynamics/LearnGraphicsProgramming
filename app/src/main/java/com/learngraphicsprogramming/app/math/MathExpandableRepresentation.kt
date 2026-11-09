@@ -70,7 +70,7 @@ object MathExpandableRepresentation {
              * El doble toque no habilita ningún swipe
              * de salida. Eso sigue siendo independiente.
              */
-            holder.onDoubleTap = {
+            if (visual !is MathDirectManipulationSurface) holder.onDoubleTap = {
                 expand(accentColor)
             }
         }

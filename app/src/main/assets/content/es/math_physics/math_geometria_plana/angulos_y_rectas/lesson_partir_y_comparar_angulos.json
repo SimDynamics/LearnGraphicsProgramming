@@ -487,6 +487,166 @@
             "correct": "La copia hace coincidir los lados completos y la región: los ángulos son congruentes. Inicialmente tenían vértices distintos y estaban en posiciones diferentes, por lo que no eran el mismo conjunto de puntos. T y K pueden quedar a distancias distintas sobre una misma semirrecta; lo mismo ocurre con W y N. Esas marcas no son extremos finales de los lados.",
             "incorrect": "Revisa por separado la coincidencia obtenida con la copia, la posición inicial y el papel de las marcas."
           }
+        },
+        {
+          "type": "paragraph",
+          "text": "Ahora realizarás la superposición. «Mover copia» traslada toda la figura; «Girar copia» la hace girar alrededor de su vértice sin abrir ni cerrar sus lados. Usa «Vista» sólo para cambiar el encuadre. Lleva primero Z a M y gira la copia hasta que ZT siga la misma semirrecta que MK. Después contrasta ZW con MN y sus regiones elegidas."
+        },
+        {
+          "type": "paragraph",
+          "text": "Las marcas T y K, o W y N, pueden quedar a distintas distancias del vértice aunque sus lados completos coincidan. Alinea las semirrectas y sus sentidos, no las distancias de esas marcas. La pequeña tolerancia del gesto permite comprobar la colocación en el control; la congruencia geométrica requiere conservar los dos lados y la región completa."
+        },
+        {
+          "type": "math_puzzle",
+          "schemaVersion": 1,
+          "id": "superponer_angulos_con_marcas_a_distinta_distancia",
+          "prompt": "Traslada y gira la copia TZW sobre la referencia KMN. Haz coincidir Z con M, ZT con MK y ZW con MN, conservando las regiones indicadas. No deformes la copia ni exijas que las marcas T y K, o W y N, coincidan.",
+          "representations": [],
+          "tools": [],
+          "responses": [
+            {
+              "id": "construccion",
+              "type": "math_rigid_angle_copy",
+              "validator": {
+                "type": "rigid_angle_copy",
+                "reference": {
+                  "vertex": "M",
+                  "sides": [
+                    "mk",
+                    "mn"
+                  ],
+                  "region": "counterclockwise",
+                  "diagram": {
+                    "points": [
+                      {
+                        "id": "M",
+                        "x": 0,
+                        "y": 0,
+                        "labels": [
+                          "M"
+                        ]
+                      },
+                      {
+                        "id": "K",
+                        "x": 4,
+                        "y": 0,
+                        "labels": [
+                          "K"
+                        ]
+                      },
+                      {
+                        "id": "N",
+                        "x": 0,
+                        "y": 3,
+                        "labels": [
+                          "N"
+                        ]
+                      }
+                    ],
+                    "objects": [
+                      {
+                        "id": "mk",
+                        "kind": "ray",
+                        "through": [
+                          "M",
+                          "K"
+                        ],
+                        "contains": [
+                          "M",
+                          "K"
+                        ]
+                      },
+                      {
+                        "id": "mn",
+                        "kind": "ray",
+                        "through": [
+                          "M",
+                          "N"
+                        ],
+                        "contains": [
+                          "M",
+                          "N"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "copy": {
+                  "vertex": "Z",
+                  "sides": [
+                    "zt",
+                    "zw"
+                  ],
+                  "region": "counterclockwise",
+                  "diagram": {
+                    "points": [
+                      {
+                        "id": "Z",
+                        "x": 0,
+                        "y": 0,
+                        "labels": [
+                          "Z"
+                        ]
+                      },
+                      {
+                        "id": "T",
+                        "x": 6,
+                        "y": 0,
+                        "labels": [
+                          "T"
+                        ]
+                      },
+                      {
+                        "id": "W",
+                        "x": 0,
+                        "y": 2,
+                        "labels": [
+                          "W"
+                        ]
+                      }
+                    ],
+                    "objects": [
+                      {
+                        "id": "zt",
+                        "kind": "ray",
+                        "through": [
+                          "Z",
+                          "T"
+                        ],
+                        "contains": [
+                          "Z",
+                          "T"
+                        ]
+                      },
+                      {
+                        "id": "zw",
+                        "kind": "ray",
+                        "through": [
+                          "Z",
+                          "W"
+                        ],
+                        "contains": [
+                          "Z",
+                          "W"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "initial": {
+                  "x": 5,
+                  "y": -3,
+                  "rotation": 0.6
+                },
+                "relation": "congruent",
+                "positionTolerance": 0.1,
+                "directionTolerance": 0.02
+              }
+            }
+          ],
+          "feedback": {
+            "correct": "Coinciden el vértice, los dos lados completos y las regiones. T y K, y W y N, nombran los mismos lados desde diferentes distancias; esas marcas no tienen que coincidir para acreditar la congruencia."
+          }
         }
       ]
     },
@@ -624,6 +784,162 @@
           "feedback": {
             "correct": "HGL es menor: los puntos de su segundo lado GL distintos de G están dentro de la región de HGK y delimitan una parte propia con GH. La región de HGK conserva una parte adicional entre GL y GK. Los vértices, el lado inicial y el lado del plano de los interiores ya estaban alineados; por eso podemos aplicar el criterio. Compartir GH no hace coincidir por sí solo los segundos lados.",
             "incorrect": "Revisa la inclusión de las regiones y el papel del segundo lado bajo las condiciones de alineación dadas."
+          }
+        },
+        {
+          "type": "paragraph",
+          "text": "En esta construcción la referencia HGK permanece fija y la copia DVE se mueve completa. Conserva la correspondencia VD con GH. Una vez unidos los vértices y alineado ese primer lado en el mismo sentido, comprueba que las regiones quedan al mismo lado de su recta y observa dónde queda VE. No intentes cerrar la copia para hacerla caber."
+        },
+        {
+          "type": "math_puzzle",
+          "schemaVersion": 1,
+          "id": "alinear_una_copia_dentro_de_la_referencia",
+          "prompt": "Coloca la copia DVE dentro de la región de referencia HGK. Haz coincidir V con G y la semirrecta VD con GH, con el mismo sentido. Conserva las regiones al mismo lado del primer lado y deja VE dentro de la región de HGK, sin deformar la copia.",
+          "representations": [],
+          "tools": [],
+          "responses": [
+            {
+              "id": "construccion",
+              "type": "math_rigid_angle_copy",
+              "validator": {
+                "type": "rigid_angle_copy",
+                "reference": {
+                  "vertex": "G",
+                  "sides": [
+                    "gh",
+                    "gk"
+                  ],
+                  "region": "counterclockwise",
+                  "diagram": {
+                    "points": [
+                      {
+                        "id": "G",
+                        "x": 0,
+                        "y": 0,
+                        "labels": [
+                          "G"
+                        ]
+                      },
+                      {
+                        "id": "H",
+                        "x": 4,
+                        "y": 0,
+                        "labels": [
+                          "H"
+                        ]
+                      },
+                      {
+                        "id": "K",
+                        "x": 1,
+                        "y": 4,
+                        "labels": [
+                          "K"
+                        ]
+                      }
+                    ],
+                    "objects": [
+                      {
+                        "id": "gh",
+                        "kind": "ray",
+                        "through": [
+                          "G",
+                          "H"
+                        ],
+                        "contains": [
+                          "G",
+                          "H"
+                        ]
+                      },
+                      {
+                        "id": "gk",
+                        "kind": "ray",
+                        "through": [
+                          "G",
+                          "K"
+                        ],
+                        "contains": [
+                          "G",
+                          "K"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "copy": {
+                  "vertex": "V",
+                  "sides": [
+                    "vd",
+                    "ve"
+                  ],
+                  "region": "counterclockwise",
+                  "diagram": {
+                    "points": [
+                      {
+                        "id": "V",
+                        "x": 0,
+                        "y": 0,
+                        "labels": [
+                          "V"
+                        ]
+                      },
+                      {
+                        "id": "D",
+                        "x": 6,
+                        "y": 0,
+                        "labels": [
+                          "D"
+                        ]
+                      },
+                      {
+                        "id": "E",
+                        "x": 3,
+                        "y": 2,
+                        "labels": [
+                          "E"
+                        ]
+                      }
+                    ],
+                    "objects": [
+                      {
+                        "id": "vd",
+                        "kind": "ray",
+                        "through": [
+                          "V",
+                          "D"
+                        ],
+                        "contains": [
+                          "V",
+                          "D"
+                        ]
+                      },
+                      {
+                        "id": "ve",
+                        "kind": "ray",
+                        "through": [
+                          "V",
+                          "E"
+                        ],
+                        "contains": [
+                          "V",
+                          "E"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "initial": {
+                  "x": -3,
+                  "y": -4,
+                  "rotation": -0.8
+                },
+                "relation": "copy_inside_reference",
+                "positionTolerance": 0.1,
+                "directionTolerance": 0.02
+              }
+            }
+          ],
+          "feedback": {
+            "correct": "Después de alinear los vértices y el primer lado, VE queda estrictamente dentro de la región de HGK. La copia DVE ocupa una parte propia de la referencia. El resultado depende de esa inclusión con la colocación correcta, no de las distancias de D, E, H o K al vértice."
           }
         }
       ]
@@ -873,6 +1189,158 @@
           "feedback": {
             "correct": "QPS es menor que QPR y QPR es mayor que QPS. Las dos frases expresan la misma inclusión: QPS es una parte propia de QPR. La región adicional queda entre PS y PR. Cambiar el orden de la comparación invierte las palabras menor y mayor; conserva la relación entre las regiones.",
             "incorrect": "Conserva el ángulo de referencia de cada campo y sigue la región delimitada por sus dos lados."
+          }
+        },
+        {
+          "type": "math_puzzle",
+          "schemaVersion": 1,
+          "id": "alinear_una_copia_que_contiene_la_referencia",
+          "prompt": "La referencia es GFH y la copia móvil es DVE. Lleva V a F y VD a FG, conservando el sentido y las regiones al mismo lado del primer lado. Coloca la copia de modo que la región completa de GFH quede dentro de DVE. Mueve y gira la figura sin cambiar su apertura.",
+          "representations": [],
+          "tools": [],
+          "responses": [
+            {
+              "id": "construccion",
+              "type": "math_rigid_angle_copy",
+              "validator": {
+                "type": "rigid_angle_copy",
+                "reference": {
+                  "vertex": "F",
+                  "sides": [
+                    "fg",
+                    "fh"
+                  ],
+                  "region": "counterclockwise",
+                  "diagram": {
+                    "points": [
+                      {
+                        "id": "F",
+                        "x": 0,
+                        "y": 0,
+                        "labels": [
+                          "F"
+                        ]
+                      },
+                      {
+                        "id": "G",
+                        "x": 4,
+                        "y": 0,
+                        "labels": [
+                          "G"
+                        ]
+                      },
+                      {
+                        "id": "H",
+                        "x": 3,
+                        "y": 2,
+                        "labels": [
+                          "H"
+                        ]
+                      }
+                    ],
+                    "objects": [
+                      {
+                        "id": "fg",
+                        "kind": "ray",
+                        "through": [
+                          "F",
+                          "G"
+                        ],
+                        "contains": [
+                          "F",
+                          "G"
+                        ]
+                      },
+                      {
+                        "id": "fh",
+                        "kind": "ray",
+                        "through": [
+                          "F",
+                          "H"
+                        ],
+                        "contains": [
+                          "F",
+                          "H"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "copy": {
+                  "vertex": "V",
+                  "sides": [
+                    "vd",
+                    "ve"
+                  ],
+                  "region": "counterclockwise",
+                  "diagram": {
+                    "points": [
+                      {
+                        "id": "V",
+                        "x": 0,
+                        "y": 0,
+                        "labels": [
+                          "V"
+                        ]
+                      },
+                      {
+                        "id": "D",
+                        "x": 6,
+                        "y": 0,
+                        "labels": [
+                          "D"
+                        ]
+                      },
+                      {
+                        "id": "E",
+                        "x": 1,
+                        "y": 4,
+                        "labels": [
+                          "E"
+                        ]
+                      }
+                    ],
+                    "objects": [
+                      {
+                        "id": "vd",
+                        "kind": "ray",
+                        "through": [
+                          "V",
+                          "D"
+                        ],
+                        "contains": [
+                          "V",
+                          "D"
+                        ]
+                      },
+                      {
+                        "id": "ve",
+                        "kind": "ray",
+                        "through": [
+                          "V",
+                          "E"
+                        ],
+                        "contains": [
+                          "V",
+                          "E"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "initial": {
+                  "x": 5,
+                  "y": -4,
+                  "rotation": 1.1
+                },
+                "relation": "reference_inside_copy",
+                "positionTolerance": 0.1,
+                "directionTolerance": 0.02
+              }
+            }
+          ],
+          "feedback": {
+            "correct": "GFH queda como parte propia de DVE. El segundo lado VE sobrepasa FH por el mismo lado de la recta común y la copia conserva su región. Por eso aquí la copia contiene la referencia; llamar simplemente exterior a un lado no habría bastado sin comprobar antes esa colocación."
           }
         }
       ]
@@ -1235,8 +1703,676 @@
         {
           "type": "paragraph",
           "text": "Al recomponer partes en el próximo desarrollo conservaremos también qué fronteras comparten y qué regiones quedan a cada lado."
+        },
+        {
+          "type": "paragraph",
+          "text": "En la última construcción, la región de la copia DVC empieza debajo del lado VD y la referencia AOB está arriba de OA. Ahora la correspondencia pedida es VC con OA y VD con OB. Conserva esa elección durante el movimiento: puedes trasladar y girar la copia completa, pero no reflejarla ni intercambiar automáticamente sus lados."
+        },
+        {
+          "type": "math_puzzle",
+          "schemaVersion": 1,
+          "id": "superponer_una_region_con_correspondencia_explicita",
+          "prompt": "Superpone la copia DVC sobre la referencia AOB conservando la región indicada. Haz coincidir V con O, el lado VC con OA y el lado VD con OB. La colocación inicial de las regiones no satisface la superposición: realiza el movimiento rígido y comprueba los dos lados con esa correspondencia.",
+          "representations": [],
+          "tools": [],
+          "responses": [
+            {
+              "id": "construccion",
+              "type": "math_rigid_angle_copy",
+              "validator": {
+                "type": "rigid_angle_copy",
+                "reference": {
+                  "vertex": "O",
+                  "sides": [
+                    "oa",
+                    "ob"
+                  ],
+                  "region": "counterclockwise",
+                  "diagram": {
+                    "points": [
+                      {
+                        "id": "O",
+                        "x": 0,
+                        "y": 0,
+                        "labels": [
+                          "O"
+                        ]
+                      },
+                      {
+                        "id": "A",
+                        "x": 4,
+                        "y": 0,
+                        "labels": [
+                          "A"
+                        ]
+                      },
+                      {
+                        "id": "B",
+                        "x": 0,
+                        "y": 3,
+                        "labels": [
+                          "B"
+                        ]
+                      }
+                    ],
+                    "objects": [
+                      {
+                        "id": "oa",
+                        "kind": "ray",
+                        "through": [
+                          "O",
+                          "A"
+                        ],
+                        "contains": [
+                          "O",
+                          "A"
+                        ]
+                      },
+                      {
+                        "id": "ob",
+                        "kind": "ray",
+                        "through": [
+                          "O",
+                          "B"
+                        ],
+                        "contains": [
+                          "O",
+                          "B"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "copy": {
+                  "vertex": "V",
+                  "sides": [
+                    "vc",
+                    "vd"
+                  ],
+                  "region": "counterclockwise",
+                  "diagram": {
+                    "points": [
+                      {
+                        "id": "V",
+                        "x": 0,
+                        "y": 0,
+                        "labels": [
+                          "V"
+                        ]
+                      },
+                      {
+                        "id": "D",
+                        "x": 6,
+                        "y": 0,
+                        "labels": [
+                          "D"
+                        ]
+                      },
+                      {
+                        "id": "C",
+                        "x": 0,
+                        "y": -4,
+                        "labels": [
+                          "C"
+                        ]
+                      }
+                    ],
+                    "objects": [
+                      {
+                        "id": "vd",
+                        "kind": "ray",
+                        "through": [
+                          "V",
+                          "D"
+                        ],
+                        "contains": [
+                          "V",
+                          "D"
+                        ]
+                      },
+                      {
+                        "id": "vc",
+                        "kind": "ray",
+                        "through": [
+                          "V",
+                          "C"
+                        ],
+                        "contains": [
+                          "V",
+                          "C"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "initial": {
+                  "x": 0,
+                  "y": 0,
+                  "rotation": 0
+                },
+                "relation": "congruent",
+                "positionTolerance": 0.1,
+                "directionTolerance": 0.02
+              }
+            }
+          ],
+          "feedback": {
+            "correct": "VC coincide con OA, VD coincide con OB y ambas regiones quedan superpuestas. La copia se ha girado sin reflejarse ni cambiar su apertura. La región inferior de la colocación inicial no impedía la congruencia: había que conservar la correspondencia explícita de lados al buscar otra colocación."
+          }
         }
       ]
     }
-  ]
+  ],
+  "stateLayout": {
+    "version": 2,
+    "locale": "es",
+    "origin": [
+      {
+        "id": "page_0000",
+        "blocks": [
+          {
+            "id": "block_0000_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0000_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0000_0002",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0000_0003",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0000_0004",
+            "sha256": "80b60d95473f33ddf80c226a9c65d21ea4d26f4cb75fc7c459933b1e9601d1e1"
+          },
+          {
+            "id": "block_0000_0005",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0000_0006",
+            "sha256": "259acf5d5781c83be1dfee9a1fa6aef8e2614ba644b8982233ba7178c122e4bb"
+          }
+        ]
+      },
+      {
+        "id": "page_0001",
+        "blocks": [
+          {
+            "id": "block_0001_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0001_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0001_0002",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0001_0003",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0001_0004",
+            "sha256": "b172248662a238cc8a71e6902293f1848cd3da953aa3cc3ab58d5689da038d85"
+          }
+        ]
+      },
+      {
+        "id": "page_0002",
+        "blocks": [
+          {
+            "id": "block_0002_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0002_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0002_0002",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0002_0003",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0002_0004",
+            "sha256": "47f63ea0f7eb06f7f7a508191a075e58869ef4c3aa3ef77dd44f61fe119eebb0"
+          }
+        ]
+      },
+      {
+        "id": "page_0003",
+        "blocks": [
+          {
+            "id": "block_0003_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0003_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0003_0002",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0003_0003",
+            "sha256": "93e8838766379c0da4bdb7407c4037314e91dd3a88c61c21d7f704a43d35d577"
+          },
+          {
+            "id": "block_0003_0004",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0003_0005",
+            "sha256": "384e6155aba5ad1da303ea70585e71e48ba77f5d9a8fb88e5aa9f81ee1ec5eeb"
+          }
+        ]
+      },
+      {
+        "id": "page_0004",
+        "blocks": [
+          {
+            "id": "block_0004_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0004_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0004_0002",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0004_0003",
+            "sha256": "9fc5dd26b721ef573e2d39dcbd48877cc7a54d31a215ed8c78e6f3245b3e4395"
+          },
+          {
+            "id": "block_0004_0004",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0004_0005",
+            "sha256": "27293be6108d2f90eb50e55a29cca93b7a462c0f307ec3f734b2eb2e3b0fa44d"
+          }
+        ]
+      },
+      {
+        "id": "page_0005",
+        "blocks": [
+          {
+            "id": "block_0005_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0005_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0005_0002",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0005_0003",
+            "sha256": "17b9dcce595bd977d7edf9d215ff2898ecc254bbfc37c783f3499c91b4d6ab84"
+          },
+          {
+            "id": "block_0005_0004",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0005_0005",
+            "sha256": "0bac91363b9d1f50564547ada5f14eac01d78ac0c2b1db2fd755a4a47a69a39d"
+          },
+          {
+            "id": "block_0005_0006",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      }
+    ],
+    "current": [
+      {
+        "id": "page_0000",
+        "blocks": [
+          "block_0000_0000",
+          "block_0000_0001",
+          "block_0000_0002",
+          "block_0000_0003",
+          "block_0000_0004",
+          "block_0000_0005",
+          "block_0000_0006"
+        ]
+      },
+      {
+        "id": "page_0001",
+        "blocks": [
+          "block_0001_0000",
+          "block_0001_0001",
+          "block_0001_0002",
+          "block_0001_0003",
+          "block_0001_0004",
+          "preparar_movimiento_rigido_del_angulo",
+          "distinguir_lados_de_marcas_al_construir",
+          "superponer_angulos_con_marcas_a_distinta_distancia"
+        ]
+      },
+      {
+        "id": "page_0002",
+        "blocks": [
+          "block_0002_0000",
+          "block_0002_0001",
+          "block_0002_0002",
+          "block_0002_0003",
+          "block_0002_0004",
+          "preparar_inclusion_angular_libre",
+          "alinear_una_copia_dentro_de_la_referencia"
+        ]
+      },
+      {
+        "id": "page_0003",
+        "blocks": [
+          "block_0003_0000",
+          "block_0003_0001",
+          "block_0003_0002",
+          "block_0003_0003",
+          "block_0003_0004",
+          "block_0003_0005",
+          "alinear_una_copia_que_contiene_la_referencia"
+        ]
+      },
+      {
+        "id": "page_0004",
+        "blocks": [
+          "block_0004_0000",
+          "block_0004_0001",
+          "block_0004_0002",
+          "block_0004_0003",
+          "block_0004_0004",
+          "block_0004_0005"
+        ]
+      },
+      {
+        "id": "page_0005",
+        "blocks": [
+          "block_0005_0000",
+          "block_0005_0001",
+          "block_0005_0002",
+          "block_0005_0003",
+          "block_0005_0004",
+          "block_0005_0005",
+          "block_0005_0006",
+          "preparar_correspondencia_invertida_sin_reflejar",
+          "superponer_una_region_con_correspondencia_explicita"
+        ]
+      }
+    ],
+    "family": {
+      "es": {
+        "sha256": "628e2a1d297803565926b3df701302dc215e6dd32bc823298f8400c070eef22d",
+        "origin": [
+          {
+            "id": "page_0000",
+            "blocks": [
+              {
+                "id": "block_0000_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0000_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0000_0002",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0000_0003",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0000_0004",
+                "sha256": "80b60d95473f33ddf80c226a9c65d21ea4d26f4cb75fc7c459933b1e9601d1e1"
+              },
+              {
+                "id": "block_0000_0005",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0000_0006",
+                "sha256": "259acf5d5781c83be1dfee9a1fa6aef8e2614ba644b8982233ba7178c122e4bb"
+              }
+            ]
+          },
+          {
+            "id": "page_0001",
+            "blocks": [
+              {
+                "id": "block_0001_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0001_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0001_0002",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0001_0003",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0001_0004",
+                "sha256": "b172248662a238cc8a71e6902293f1848cd3da953aa3cc3ab58d5689da038d85"
+              }
+            ]
+          },
+          {
+            "id": "page_0002",
+            "blocks": [
+              {
+                "id": "block_0002_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0002_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0002_0002",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0002_0003",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0002_0004",
+                "sha256": "47f63ea0f7eb06f7f7a508191a075e58869ef4c3aa3ef77dd44f61fe119eebb0"
+              }
+            ]
+          },
+          {
+            "id": "page_0003",
+            "blocks": [
+              {
+                "id": "block_0003_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0003_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0003_0002",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0003_0003",
+                "sha256": "93e8838766379c0da4bdb7407c4037314e91dd3a88c61c21d7f704a43d35d577"
+              },
+              {
+                "id": "block_0003_0004",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0003_0005",
+                "sha256": "384e6155aba5ad1da303ea70585e71e48ba77f5d9a8fb88e5aa9f81ee1ec5eeb"
+              }
+            ]
+          },
+          {
+            "id": "page_0004",
+            "blocks": [
+              {
+                "id": "block_0004_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0004_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0004_0002",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0004_0003",
+                "sha256": "9fc5dd26b721ef573e2d39dcbd48877cc7a54d31a215ed8c78e6f3245b3e4395"
+              },
+              {
+                "id": "block_0004_0004",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0004_0005",
+                "sha256": "27293be6108d2f90eb50e55a29cca93b7a462c0f307ec3f734b2eb2e3b0fa44d"
+              }
+            ]
+          },
+          {
+            "id": "page_0005",
+            "blocks": [
+              {
+                "id": "block_0005_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0005_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0005_0002",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0005_0003",
+                "sha256": "17b9dcce595bd977d7edf9d215ff2898ecc254bbfc37c783f3499c91b4d6ab84"
+              },
+              {
+                "id": "block_0005_0004",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0005_0005",
+                "sha256": "0bac91363b9d1f50564547ada5f14eac01d78ac0c2b1db2fd755a4a47a69a39d"
+              },
+              {
+                "id": "block_0005_0006",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "additions": [
+      {
+        "id": "preparar_movimiento_rigido_del_angulo",
+        "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5",
+        "storage": {
+          "page": 6,
+          "block": 0
+        },
+        "progressPage": "page_0001"
+      },
+      {
+        "id": "distinguir_lados_de_marcas_al_construir",
+        "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5",
+        "storage": {
+          "page": 6,
+          "block": 1
+        },
+        "progressPage": "page_0001"
+      },
+      {
+        "id": "superponer_angulos_con_marcas_a_distinta_distancia",
+        "sha256": "36f671fe3718edf1f5a3d1b157860eb663b39081ec70064924b77f7cacd20d3d",
+        "storage": {
+          "page": 6,
+          "block": 2
+        },
+        "progressPage": "page_0001"
+      },
+      {
+        "id": "preparar_inclusion_angular_libre",
+        "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5",
+        "storage": {
+          "page": 6,
+          "block": 3
+        },
+        "progressPage": "page_0002"
+      },
+      {
+        "id": "alinear_una_copia_dentro_de_la_referencia",
+        "sha256": "60c9f5dd34837a4ad8e003196823bc7cc538679d3014510927f1b30a893bc217",
+        "storage": {
+          "page": 6,
+          "block": 4
+        },
+        "progressPage": "page_0002"
+      },
+      {
+        "id": "alinear_una_copia_que_contiene_la_referencia",
+        "sha256": "9600385576b2289a51fa6b4146fc65747ff6657760c9b1f0d1d67a3439acec3d",
+        "storage": {
+          "page": 6,
+          "block": 5
+        },
+        "progressPage": "page_0003"
+      },
+      {
+        "id": "preparar_correspondencia_invertida_sin_reflejar",
+        "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5",
+        "storage": {
+          "page": 6,
+          "block": 6
+        },
+        "progressPage": "page_0005"
+      },
+      {
+        "id": "superponer_una_region_con_correspondencia_explicita",
+        "sha256": "62725b72a34856ea21f154fc028a64882f31d494423d58acbfb0b8445e73b1e6",
+        "storage": {
+          "page": 6,
+          "block": 7
+        },
+        "progressPage": "page_0005"
+      }
+    ],
+    "editorial": []
+  }
 }

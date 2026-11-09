@@ -90,7 +90,7 @@ class MathPuzzleRenderer(
                 val id = tool.optString("id", "tool_$index")
                 require(id.isNotBlank() && id !in tools) { "ID de herramienta vacío o repetido: $id" }
                 val config = tool.optJSONObject("config") ?: tool
-                val control = MathVisualControls.create(context, MathResponseSpec(id, type, config, JSONObject()), accent, ::changed)
+                val control = MathVisualControls.create(context, MathResponseSpec(id, type, config, JSONObject()), accent, ::changed, ::save)
                     ?: throw IllegalArgumentException("Herramienta no disponible: $type")
                 tools[id] = control
                 initialTools[id] = control.answer()
@@ -104,7 +104,7 @@ class MathPuzzleRenderer(
         spec.responses.forEach { response ->
             val control = MathInputControls.create(context, response, accent, ::changed)
                 ?: MathDragControls.create(context, response, accent, ::changed)
-                ?: MathVisualControls.create(context, response, accent, ::changed)
+                ?: MathVisualControls.create(context, response, accent, ::changed, ::save)
                 ?: throw IllegalArgumentException("Interacción no disponible: ${response.type}")
             responses[response.id] = control
             initialResponses[response.id] = control.answer()

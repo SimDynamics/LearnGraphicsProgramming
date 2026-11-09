@@ -111,6 +111,69 @@
         {
           "type": "paragraph",
           "text": "Un múltiplo no es un dibujo con más tinta. La condición decisiva es que el total contenga las copias completas con sus longitudes conservadas. No contamos pasadas del lápiz ni letras escritas sobre la figura."
+        },
+        {
+          "type": "paragraph",
+          "text": "Selecciona A–B en «Longitud» y pulsa «Tomar longitud» una sola vez. Traslada y gira esa misma apertura para colocar la primera copia desde M; después llévala al extremo obtenido para colocar la siguiente. Repite sin cambiar la apertura. Con «Colocar puntos» construyes los extremos y con «Mover herramienta» trasladas la referencia: mover la herramienta por sí solo no coloca un punto."
+        },
+        {
+          "type": "math_puzzle",
+          "schemaVersion": 1,
+          "id": "construir_tres_copias_con_la_misma_apertura",
+          "prompt": "Forma tres copias completas y consecutivas de AB desde M, siguiendo la semirrecta. Coloca N, P y Q. MN, NP y PQ deben ser congruentes con AB y quedar en ese orden, sin superponerse ni dejar huecos.",
+          "representations": [],
+          "tools": [],
+          "responses": [
+            {
+              "id": "construccion",
+              "type": "math_segment_transport",
+              "validator": {
+                "type": "segment_transport",
+                "mode": "chain",
+                "sources": [
+                  {
+                    "id": "ab",
+                    "from": {
+                      "x": -3,
+                      "y": 4,
+                      "label": "A"
+                    },
+                    "to": {
+                      "x": -1.5,
+                      "y": 6,
+                      "label": "B"
+                    }
+                  }
+                ],
+                "target": {
+                  "origin": {
+                    "x": -1,
+                    "y": -1,
+                    "label": "M"
+                  },
+                  "direction": {
+                    "x": 1,
+                    "y": 0
+                  }
+                },
+                "steps": [
+                  "ab",
+                  "ab",
+                  "ab"
+                ],
+                "pointLabels": [
+                  "N",
+                  "P",
+                  "Q"
+                ],
+                "positionTolerance": 0.04,
+                "lengthTolerance": 0.04
+              }
+            }
+          ],
+          "feedback": {
+            "correct": "MQ está formado por tres copias completas de AB. Hay tres intervalos y cuatro extremos contando M. Cada tramo conserva la apertura original; la longitud final no basta para compensar una copia más corta con otra más larga."
+          }
         }
       ]
     },
@@ -246,6 +309,67 @@
         {
           "type": "paragraph",
           "text": "Con n copias consecutivas de longitud positiva hay n intervalos, n − 1 separaciones interiores y n + 1 puntos si se incluyen los extremos del total. Aquí n es un entero positivo. Para una sola copia no hay separación interior; sus dos extremos siguen siendo distintos. Esta relación se explica porque cada copia nueva comparte el último extremo y añade sólo el siguiente."
+        },
+        {
+          "type": "math_puzzle",
+          "schemaVersion": 1,
+          "id": "construir_cuatro_intervalos_consecutivos",
+          "prompt": "Recupera la construcción en otra orientación: forma cuatro copias completas de AB desde M sobre la semirrecta. Coloca N, P, Q y T para construir MN, NP, PQ y QT. Conserva la misma apertura en los cuatro intervalos y revisa cuáles de los puntos quedan dentro del total MT.",
+          "representations": [],
+          "tools": [],
+          "responses": [
+            {
+              "id": "construccion",
+              "type": "math_segment_transport",
+              "validator": {
+                "type": "segment_transport",
+                "mode": "chain",
+                "sources": [
+                  {
+                    "id": "ab",
+                    "from": {
+                      "x": -3,
+                      "y": 5,
+                      "label": "A"
+                    },
+                    "to": {
+                      "x": -1.2,
+                      "y": 5,
+                      "label": "B"
+                    }
+                  }
+                ],
+                "target": {
+                  "origin": {
+                    "x": 4,
+                    "y": -3,
+                    "label": "M"
+                  },
+                  "direction": {
+                    "x": -1,
+                    "y": 1
+                  }
+                },
+                "steps": [
+                  "ab",
+                  "ab",
+                  "ab",
+                  "ab"
+                ],
+                "pointLabels": [
+                  "N",
+                  "P",
+                  "Q",
+                  "T"
+                ],
+                "positionTolerance": 0.04,
+                "lengthTolerance": 0.04
+              }
+            }
+          ],
+          "feedback": {
+            "correct": "Los cuatro intervalos congruentes forman MT. N, P y Q son separaciones interiores; M y T son los extremos del total. Contar cinco puntos no convierte la construcción en cinco copias."
+          }
         }
       ]
     },
@@ -495,6 +619,56 @@
         {
           "type": "paragraph",
           "text": "El grupo de tres partes no es una nueva unidad obligatoria. Puedes usarlo como subtotal para comprobar el complemento, pero al recuperar otra parte debes volver a la longitud común de cada una. Las operaciones describen cómo se organiza el mismo total, no un cambio en las longitudes de las piezas."
+        },
+        {
+          "type": "paragraph",
+          "text": "En el reparto siguiente están dados los dos extremos A y B del total, pero no sus separaciones interiores. Coloca cuatro marcas en orden dentro de AB. Selecciona el primer tramo en «Longitud», pulsa «Tomar longitud» y usa su apertura para comparar cada tramo siguiente, incluido el último hasta B. Si no coinciden, corrige las marcas y vuelve a pulsar «Tomar longitud» para capturar la nueva apertura: una herramienta ya capturada conserva su longitud aunque después muevas un punto."
+        },
+        {
+          "type": "paragraph",
+          "text": "Busca un reparto que conserve una misma apertura y cubra todo AB. Este ajuste mediante comparación de copias es una práctica de las condiciones del reparto; todavía no utilizamos un procedimiento de paralelas ni una construcción con compás. El control admite la pequeña imprecisión del gesto, pero la definición de partes congruentes exige igualdad de longitudes, no un parecido aproximado."
+        },
+        {
+          "type": "math_puzzle",
+          "schemaVersion": 1,
+          "id": "construir_cinco_partes_congruentes",
+          "prompt": "Reparte AB en cinco partes congruentes y consecutivas. Coloca libremente P, Q, R y S, en ese orden dentro de AB. Contrasta AP, PQ, QR, RS y SB con la misma apertura. Deben cubrir exactamente el total, sin huecos, retrocesos ni partes superpuestas.",
+          "representations": [],
+          "tools": [],
+          "responses": [
+            {
+              "id": "construccion",
+              "type": "math_segment_transport",
+              "validator": {
+                "type": "segment_transport",
+                "mode": "partition",
+                "target": {
+                  "origin": {
+                    "x": -3,
+                    "y": -1,
+                    "label": "A"
+                  },
+                  "end": {
+                    "x": 5,
+                    "y": 5,
+                    "label": "B"
+                  }
+                },
+                "partitionCount": 5,
+                "pointLabels": [
+                  "P",
+                  "Q",
+                  "R",
+                  "S"
+                ],
+                "positionTolerance": 0.04,
+                "lengthTolerance": 0.04
+              }
+            }
+          ],
+          "feedback": {
+            "correct": "Las cuatro marcas interiores forman cinco partes congruentes que cubren AB. AP, PQ, QR, RS y SB aportan la misma longitud. Tener cuatro marcas no sería suficiente si alguna parte tuviera otra apertura o una marca quedara fuera del total."
+          }
         }
       ]
     },
@@ -558,6 +732,49 @@
         {
           "type": "paragraph",
           "text": "La mitad de una longitud positiva es positiva y menor que el total. En AB existe un único punto a esa distancia de A; al componer el total, la parte que falta tiene la misma longitud. Así se justifican existencia y unicidad del punto medio usando las propiedades de posición y distancia, sin suponer que el centro visual del dibujo sea una prueba (Lang, 1971, p. 108)."
+        },
+        {
+          "type": "paragraph",
+          "text": "Para construir el punto medio con esta herramienta, coloca M dentro de AB y compara las aperturas A–M y M–B. Traslada una de ellas sin estirarla para contrastar la otra. Si difieren, corrige M y vuelve a capturar la longitud. Mantén M sobre el segmento: alejarlo de la recta para igualar las distancias no construye el punto medio."
+        },
+        {
+          "type": "math_puzzle",
+          "schemaVersion": 1,
+          "id": "construir_un_punto_medio_libremente",
+          "prompt": "Construye el punto medio M del segmento AB. Colócalo libremente dentro del segmento y contrasta las dos partes con la herramienta. Deben cumplirse a la vez la pertenencia de M a AB y la congruencia de AM con MB.",
+          "representations": [],
+          "tools": [],
+          "responses": [
+            {
+              "id": "construccion",
+              "type": "math_segment_transport",
+              "validator": {
+                "type": "segment_transport",
+                "mode": "partition",
+                "target": {
+                  "origin": {
+                    "x": -4,
+                    "y": 4,
+                    "label": "A"
+                  },
+                  "end": {
+                    "x": 4,
+                    "y": -2,
+                    "label": "B"
+                  }
+                },
+                "partitionCount": 2,
+                "pointLabels": [
+                  "M"
+                ],
+                "positionTolerance": 0.04,
+                "lengthTolerance": 0.04
+              }
+            }
+          ],
+          "feedback": {
+            "correct": "M pertenece al interior de AB y las aperturas AM y MB coinciden. Las dos partes positivas cubren todo el segmento. Igualar sólo las distancias desde un punto fuera de AB no cumpliría la definición de punto medio."
+          }
         }
       ]
     },
@@ -800,5 +1017,556 @@
         }
       ]
     }
-  ]
+  ],
+  "stateLayout": {
+    "version": 2,
+    "locale": "es",
+    "origin": [
+      {
+        "id": "page_0000",
+        "blocks": [
+          {
+            "id": "block_0000_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0000_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0000_0002",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0000_0003",
+            "sha256": "870a4f855c9b742c46e308eb583a3c83651d22b27e4ddc84183da05fcfab0fcd"
+          },
+          {
+            "id": "block_0000_0004",
+            "sha256": "01d25384be95f05a78eb2e6a118cdd777023ae0fdf1edee7a18a4dba6362856d"
+          },
+          {
+            "id": "block_0000_0005",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      },
+      {
+        "id": "page_0001",
+        "blocks": [
+          {
+            "id": "block_0001_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0001_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0001_0002",
+            "sha256": "4996fd345bdfb1b6c997e104a9bcd4ba2a6fcc1244b1d61e02e6cb5c30318d4a"
+          },
+          {
+            "id": "block_0001_0003",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      },
+      {
+        "id": "page_0002",
+        "blocks": [
+          {
+            "id": "block_0002_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0002_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0002_0002",
+            "sha256": "6adb85846f85254de0de8e3190fa5e1dc5dc1ba29c8f24f34176da4fc9282c43"
+          },
+          {
+            "id": "block_0002_0003",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      },
+      {
+        "id": "page_0003",
+        "blocks": [
+          {
+            "id": "block_0003_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0003_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0003_0002",
+            "sha256": "89f59ab0f14df7c14aad321b11383c4debd71e3a7cc0c3b70e15984895fb44ec"
+          },
+          {
+            "id": "block_0003_0003",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      },
+      {
+        "id": "page_0004",
+        "blocks": [
+          {
+            "id": "block_0004_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0004_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0004_0002",
+            "sha256": "4b0887e0d6a3883ddda3b3a46855e260b03166aaf644f55ee2e0b0767115fe62"
+          },
+          {
+            "id": "block_0004_0003",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      },
+      {
+        "id": "page_0005",
+        "blocks": [
+          {
+            "id": "block_0005_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0005_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0005_0002",
+            "sha256": "9344390c3e52a8f0aec3a30ff3510d7b85552be896ee1969f21723e996086eff"
+          },
+          {
+            "id": "block_0005_0003",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      },
+      {
+        "id": "page_0006",
+        "blocks": [
+          {
+            "id": "block_0006_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0006_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0006_0002",
+            "sha256": "6970545b956843bab806f6a9cdc8bf6edd162ad6eafbdd21c99181460a11fc90"
+          },
+          {
+            "id": "block_0006_0003",
+            "sha256": "9f1695b8be77f31819d82c3d28d3172054c2913d2868409d539ef2cb44e930d1"
+          },
+          {
+            "id": "block_0006_0004",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      },
+      {
+        "id": "page_0007",
+        "blocks": [
+          {
+            "id": "block_0007_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0007_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0007_0002",
+            "sha256": "64d9ac14b6130814b506213bb75820052efd1f11aee00b0c04c5b504425be97b"
+          },
+          {
+            "id": "block_0007_0003",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0007_0004",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0007_0005",
+            "sha256": "f5cecdf7c9431b2ddb2e61808a005750b5b49522a5645bfb076c703b2f7c7f81"
+          }
+        ]
+      }
+    ],
+    "current": [
+      {
+        "id": "page_0000",
+        "blocks": [
+          "block_0000_0000",
+          "block_0000_0001",
+          "block_0000_0002",
+          "block_0000_0003",
+          "block_0000_0004",
+          "block_0000_0005",
+          "preparar_repeticion_libre",
+          "construir_tres_copias_con_la_misma_apertura"
+        ]
+      },
+      {
+        "id": "page_0001",
+        "blocks": [
+          "block_0001_0000",
+          "block_0001_0001",
+          "block_0001_0002",
+          "block_0001_0003",
+          "construir_cuatro_intervalos_consecutivos"
+        ]
+      },
+      {
+        "id": "page_0002",
+        "blocks": [
+          "block_0002_0000",
+          "block_0002_0001",
+          "block_0002_0002",
+          "block_0002_0003"
+        ]
+      },
+      {
+        "id": "page_0003",
+        "blocks": [
+          "block_0003_0000",
+          "block_0003_0001",
+          "block_0003_0002",
+          "block_0003_0003"
+        ]
+      },
+      {
+        "id": "page_0004",
+        "blocks": [
+          "block_0004_0000",
+          "block_0004_0001",
+          "block_0004_0002",
+          "block_0004_0003",
+          "preparar_particion_por_comparacion_de_aperturas",
+          "distinguir_ajuste_operativo_de_igualdad",
+          "construir_cinco_partes_congruentes"
+        ]
+      },
+      {
+        "id": "page_0005",
+        "blocks": [
+          "block_0005_0000",
+          "block_0005_0001",
+          "block_0005_0002",
+          "block_0005_0003",
+          "preparar_construccion_del_punto_medio",
+          "construir_un_punto_medio_libremente"
+        ]
+      },
+      {
+        "id": "page_0006",
+        "blocks": [
+          "block_0006_0000",
+          "block_0006_0001",
+          "block_0006_0002",
+          "block_0006_0003",
+          "block_0006_0004"
+        ]
+      },
+      {
+        "id": "page_0007",
+        "blocks": [
+          "block_0007_0000",
+          "block_0007_0001",
+          "block_0007_0002",
+          "block_0007_0003",
+          "block_0007_0004",
+          "block_0007_0005"
+        ]
+      }
+    ],
+    "family": {
+      "es": {
+        "sha256": "6c90b083e4ef5a1aad5e3e6c239a53a4909f3f1f124f84ac422c631e8939121f",
+        "origin": [
+          {
+            "id": "page_0000",
+            "blocks": [
+              {
+                "id": "block_0000_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0000_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0000_0002",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0000_0003",
+                "sha256": "870a4f855c9b742c46e308eb583a3c83651d22b27e4ddc84183da05fcfab0fcd"
+              },
+              {
+                "id": "block_0000_0004",
+                "sha256": "01d25384be95f05a78eb2e6a118cdd777023ae0fdf1edee7a18a4dba6362856d"
+              },
+              {
+                "id": "block_0000_0005",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          },
+          {
+            "id": "page_0001",
+            "blocks": [
+              {
+                "id": "block_0001_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0001_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0001_0002",
+                "sha256": "4996fd345bdfb1b6c997e104a9bcd4ba2a6fcc1244b1d61e02e6cb5c30318d4a"
+              },
+              {
+                "id": "block_0001_0003",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          },
+          {
+            "id": "page_0002",
+            "blocks": [
+              {
+                "id": "block_0002_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0002_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0002_0002",
+                "sha256": "6adb85846f85254de0de8e3190fa5e1dc5dc1ba29c8f24f34176da4fc9282c43"
+              },
+              {
+                "id": "block_0002_0003",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          },
+          {
+            "id": "page_0003",
+            "blocks": [
+              {
+                "id": "block_0003_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0003_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0003_0002",
+                "sha256": "89f59ab0f14df7c14aad321b11383c4debd71e3a7cc0c3b70e15984895fb44ec"
+              },
+              {
+                "id": "block_0003_0003",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          },
+          {
+            "id": "page_0004",
+            "blocks": [
+              {
+                "id": "block_0004_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0004_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0004_0002",
+                "sha256": "4b0887e0d6a3883ddda3b3a46855e260b03166aaf644f55ee2e0b0767115fe62"
+              },
+              {
+                "id": "block_0004_0003",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          },
+          {
+            "id": "page_0005",
+            "blocks": [
+              {
+                "id": "block_0005_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0005_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0005_0002",
+                "sha256": "9344390c3e52a8f0aec3a30ff3510d7b85552be896ee1969f21723e996086eff"
+              },
+              {
+                "id": "block_0005_0003",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          },
+          {
+            "id": "page_0006",
+            "blocks": [
+              {
+                "id": "block_0006_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0006_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0006_0002",
+                "sha256": "6970545b956843bab806f6a9cdc8bf6edd162ad6eafbdd21c99181460a11fc90"
+              },
+              {
+                "id": "block_0006_0003",
+                "sha256": "9f1695b8be77f31819d82c3d28d3172054c2913d2868409d539ef2cb44e930d1"
+              },
+              {
+                "id": "block_0006_0004",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          },
+          {
+            "id": "page_0007",
+            "blocks": [
+              {
+                "id": "block_0007_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0007_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0007_0002",
+                "sha256": "64d9ac14b6130814b506213bb75820052efd1f11aee00b0c04c5b504425be97b"
+              },
+              {
+                "id": "block_0007_0003",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0007_0004",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0007_0005",
+                "sha256": "f5cecdf7c9431b2ddb2e61808a005750b5b49522a5645bfb076c703b2f7c7f81"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "additions": [
+      {
+        "id": "preparar_repeticion_libre",
+        "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5",
+        "storage": {
+          "page": 8,
+          "block": 0
+        },
+        "progressPage": "page_0000"
+      },
+      {
+        "id": "construir_tres_copias_con_la_misma_apertura",
+        "sha256": "ee3df67b12022afda5786258cd7c1ad11d015d502dd6807ae381758ea277a596",
+        "storage": {
+          "page": 8,
+          "block": 1
+        },
+        "progressPage": "page_0000"
+      },
+      {
+        "id": "construir_cuatro_intervalos_consecutivos",
+        "sha256": "56d8094c32a3ebcf8bcbbca616b1affd47bb2aaeb052309128b419d6121b7571",
+        "storage": {
+          "page": 8,
+          "block": 2
+        },
+        "progressPage": "page_0001"
+      },
+      {
+        "id": "preparar_particion_por_comparacion_de_aperturas",
+        "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5",
+        "storage": {
+          "page": 8,
+          "block": 3
+        },
+        "progressPage": "page_0004"
+      },
+      {
+        "id": "distinguir_ajuste_operativo_de_igualdad",
+        "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5",
+        "storage": {
+          "page": 8,
+          "block": 4
+        },
+        "progressPage": "page_0004"
+      },
+      {
+        "id": "construir_cinco_partes_congruentes",
+        "sha256": "2b49abc088f480239e44358088fe0dbec2b97eccdcf53a6cc3e0b66f9d086219",
+        "storage": {
+          "page": 8,
+          "block": 5
+        },
+        "progressPage": "page_0004"
+      },
+      {
+        "id": "preparar_construccion_del_punto_medio",
+        "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5",
+        "storage": {
+          "page": 8,
+          "block": 6
+        },
+        "progressPage": "page_0005"
+      },
+      {
+        "id": "construir_un_punto_medio_libremente",
+        "sha256": "2af7e511fed8faa32698a1aa5d017a5790ec63add6ed0acf345fc4aaab3059f2",
+        "storage": {
+          "page": 8,
+          "block": 7
+        },
+        "progressPage": "page_0005"
+      }
+    ],
+    "editorial": []
+  }
 }

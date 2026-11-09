@@ -131,6 +131,73 @@
         {
           "type": "paragraph",
           "text": "Un segmento es un conjunto de puntos situado en un lugar. Su longitud es la magnitud que comparamos o medimos. Dos segmentos pueden ser congruentes sin ser el mismo segmento. En cambio, AB y BA nombran el mismo segmento, pues invertir sus extremos no cambia sus puntos; invertir los nombres de una semirrecta sí cambia su origen. Recupera esta distinción de la lección anterior."
+        },
+        {
+          "type": "heading",
+          "text": "Construir una copia desde un origen dado"
+        },
+        {
+          "type": "paragraph",
+          "text": "En la construcción siguiente, el segmento AB y la semirrecta con origen M son los datos. Selecciona A–B en «Longitud» y pulsa «Tomar longitud» para conservar esa apertura. «Mover herramienta» traslada esa apertura completa y «Girar herramienta» cambia su orientación sin estirarla. Haz coincidir un extremo de la herramienta con M y orienta el otro siguiendo el sentido de la semirrecta."
+        },
+        {
+          "type": "paragraph",
+          "text": "Pasa a «Colocar puntos» y sitúa libremente N donde termina la apertura transportada. Puedes arrastrarlo para corregirlo. También puedes seleccionar M–N en «Longitud», pulsar «Tomar longitud» y contrastar sus dos extremos con A–B. Si necesitas otra zona del dibujo, usa «Vista», «Acercar» o «Alejar»: esos controles cambian lo que ves, no la longitud de la herramienta ni los puntos construidos."
+        },
+        {
+          "type": "math_puzzle",
+          "schemaVersion": 1,
+          "id": "transportar_una_longitud_sobre_semirrecta",
+          "prompt": "Construye N sobre la semirrecta de origen M de modo que MN sea congruente con AB. Conserva la apertura A–B y el sentido de la semirrecta. El extremo N no está dibujado: colócalo tú y contrasta ambos extremos antes de comprobar.",
+          "representations": [],
+          "tools": [],
+          "responses": [
+            {
+              "id": "construccion",
+              "type": "math_segment_transport",
+              "validator": {
+                "type": "segment_transport",
+                "mode": "chain",
+                "sources": [
+                  {
+                    "id": "ab",
+                    "from": {
+                      "x": -4,
+                      "y": 3,
+                      "label": "A"
+                    },
+                    "to": {
+                      "x": -1,
+                      "y": 3,
+                      "label": "B"
+                    }
+                  }
+                ],
+                "target": {
+                  "origin": {
+                    "x": 1,
+                    "y": -1,
+                    "label": "M"
+                  },
+                  "direction": {
+                    "x": 1,
+                    "y": 0
+                  }
+                },
+                "steps": [
+                  "ab"
+                ],
+                "pointLabels": [
+                  "N"
+                ],
+                "positionTolerance": 0.04,
+                "lengthTolerance": 0.04
+              }
+            }
+          ],
+          "feedback": {
+            "correct": "MN queda sobre la semirrecta y conserva la longitud de AB. Al llevar una copia de AB a MN coinciden los dos extremos, no sólo el inicial. La aceptación del gesto admite una pequeña imprecisión de colocación; la condición geométrica que se busca es conservar exactamente la longitud."
+          }
         }
       ]
     },
@@ -640,6 +707,65 @@
             "correct": "Hacer coincidir sólo un extremo no compara las longitudes completas. La superposición que acredita congruencia hace coincidir los dos extremos mediante un movimiento sin deformación; estirar cambiaría la longitud que se quería comparar.",
             "incorrect": "Reconsidera qué relación de los datos justifica el procedimiento elegido. Puedes corregir la selección en esta misma actividad."
           }
+        },
+        {
+          "type": "paragraph",
+          "text": "Ahora cambia la colocación: AB ya no tiene la dirección de la semirrecta. Toma su apertura, trasládala a M y gírala sin cambiarla. Elige el sentido indicado por la semirrecta; prolongar su recta hacia el lado contrario no satisface la misma condición. Mover la vista te permite alcanzar un extremo que quede fuera del encuadre inicial."
+        },
+        {
+          "type": "math_puzzle",
+          "schemaVersion": 1,
+          "id": "transportar_longitud_con_otro_sentido",
+          "prompt": "Transporta la longitud de AB desde M sobre la semirrecta oblicua. Coloca N libremente. Comprueba que MN conserva la apertura A–B y que N pertenece a la semirrecta dada, no a su prolongación en sentido contrario.",
+          "representations": [],
+          "tools": [],
+          "responses": [
+            {
+              "id": "construccion",
+              "type": "math_segment_transport",
+              "validator": {
+                "type": "segment_transport",
+                "mode": "chain",
+                "sources": [
+                  {
+                    "id": "ab",
+                    "from": {
+                      "x": 2,
+                      "y": 5,
+                      "label": "A"
+                    },
+                    "to": {
+                      "x": 2,
+                      "y": 1,
+                      "label": "B"
+                    }
+                  }
+                ],
+                "target": {
+                  "origin": {
+                    "x": -2,
+                    "y": -2,
+                    "label": "M"
+                  },
+                  "direction": {
+                    "x": -3,
+                    "y": 4
+                  }
+                },
+                "steps": [
+                  "ab"
+                ],
+                "pointLabels": [
+                  "N"
+                ],
+                "positionTolerance": 0.04,
+                "lengthTolerance": 0.04
+              }
+            }
+          ],
+          "feedback": {
+            "correct": "La distinta orientación no cambia la longitud transportada. N está en el sentido pedido y la apertura conserva la coincidencia de ambos extremos. Un punto a igual distancia en el sentido contrario conservaría una longitud, pero incumpliría esta construcción."
+          }
         }
       ]
     },
@@ -893,5 +1019,521 @@
         }
       ]
     }
-  ]
+  ],
+  "stateLayout": {
+    "version": 2,
+    "locale": "es",
+    "origin": [
+      {
+        "id": "page_0000",
+        "blocks": [
+          {
+            "id": "block_0000_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0000_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0000_0002",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0000_0003",
+            "sha256": "9b167420c7efe476a3d3cca0cfbf2706ed6cc0528b76308dc173553f4c9bdb12"
+          },
+          {
+            "id": "block_0000_0004",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      },
+      {
+        "id": "page_0001",
+        "blocks": [
+          {
+            "id": "block_0001_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0001_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0001_0002",
+            "sha256": "3864992e7ddb77b37666e51e8f532f32ab47a898e713da95ae87969e7db2fc08"
+          },
+          {
+            "id": "block_0001_0003",
+            "sha256": "ca2b22b53eb506f48f210245436cf9df670da931d39788ab6b9796c9a68fa173"
+          }
+        ]
+      },
+      {
+        "id": "page_0002",
+        "blocks": [
+          {
+            "id": "block_0002_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0002_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0002_0002",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0002_0003",
+            "sha256": "e192382dd2bf660bd599115fd43cb6c86685e4235437819afb390a23c1e6827e"
+          },
+          {
+            "id": "block_0002_0004",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      },
+      {
+        "id": "page_0003",
+        "blocks": [
+          {
+            "id": "block_0003_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0003_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0003_0002",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0003_0003",
+            "sha256": "167297bb8c41d293ced54669baa3a1546e50dc23623d1b5414defc1e00076d6e"
+          },
+          {
+            "id": "block_0003_0004",
+            "sha256": "c03923ff22a38f42f69f6e1fe5ec192a9b9386e58c7989d40b005b8ff1f8ebc3"
+          }
+        ]
+      },
+      {
+        "id": "page_0004",
+        "blocks": [
+          {
+            "id": "block_0004_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0004_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0004_0002",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0004_0003",
+            "sha256": "59041378dce59cca622f1c2854a7fc48d6e65c087891f695dd4f2f569e67c35a"
+          },
+          {
+            "id": "block_0004_0004",
+            "sha256": "4d67770681569511d8642d958be332c6bd6907f20e9059116fb21e9d7e7edc33"
+          }
+        ]
+      },
+      {
+        "id": "page_0005",
+        "blocks": [
+          {
+            "id": "block_0005_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0005_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0005_0002",
+            "sha256": "ef9927341e2d82985fd63a78ddc89cf549f97798ff123604d95b3a0e2b0ea135"
+          },
+          {
+            "id": "block_0005_0003",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0005_0004",
+            "sha256": "ce7d215588615175fc699d893c5376f5338f87a6881953ce788b229266bd9db5"
+          }
+        ]
+      },
+      {
+        "id": "page_0006",
+        "blocks": [
+          {
+            "id": "block_0006_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0006_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0006_0002",
+            "sha256": "cdbb481772fddf6bb81b381bca79c83d32e5172ceebe86826e1cb9cda3154a06"
+          },
+          {
+            "id": "block_0006_0003",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0006_0004",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0006_0005",
+            "sha256": "45f3ba2755b94ce055ebca6ccc9f704d745f196dd3bd7fdad7dd571fae56650c"
+          },
+          {
+            "id": "block_0006_0006",
+            "sha256": "8fec1629b811b9cbc6fa21313e768edf7b4c4ee0e3691f37e072cf098f144ec8"
+          },
+          {
+            "id": "block_0006_0007",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      }
+    ],
+    "current": [
+      {
+        "id": "page_0000",
+        "blocks": [
+          "block_0000_0000",
+          "block_0000_0001",
+          "block_0000_0002",
+          "block_0000_0003",
+          "block_0000_0004",
+          "introducir_herramienta_de_transporte",
+          "usar_herramienta_de_transporte",
+          "colocar_extremo_y_comprobar_transporte",
+          "transportar_una_longitud_sobre_semirrecta"
+        ]
+      },
+      {
+        "id": "page_0001",
+        "blocks": [
+          "block_0001_0000",
+          "block_0001_0001",
+          "block_0001_0002",
+          "block_0001_0003"
+        ]
+      },
+      {
+        "id": "page_0002",
+        "blocks": [
+          "block_0002_0000",
+          "block_0002_0001",
+          "block_0002_0002",
+          "block_0002_0003",
+          "block_0002_0004"
+        ]
+      },
+      {
+        "id": "page_0003",
+        "blocks": [
+          "block_0003_0000",
+          "block_0003_0001",
+          "block_0003_0002",
+          "block_0003_0003",
+          "block_0003_0004"
+        ]
+      },
+      {
+        "id": "page_0004",
+        "blocks": [
+          "block_0004_0000",
+          "block_0004_0001",
+          "block_0004_0002",
+          "block_0004_0003",
+          "block_0004_0004"
+        ]
+      },
+      {
+        "id": "page_0005",
+        "blocks": [
+          "block_0005_0000",
+          "block_0005_0001",
+          "block_0005_0002",
+          "block_0005_0003",
+          "block_0005_0004",
+          "recuperar_transporte_en_otra_orientacion",
+          "transportar_longitud_con_otro_sentido"
+        ]
+      },
+      {
+        "id": "page_0006",
+        "blocks": [
+          "block_0006_0000",
+          "block_0006_0001",
+          "block_0006_0002",
+          "block_0006_0003",
+          "block_0006_0004",
+          "block_0006_0005",
+          "block_0006_0006",
+          "block_0006_0007"
+        ]
+      }
+    ],
+    "family": {
+      "es": {
+        "sha256": "5fd7e967e879322252596831d1aabf7f94fc06066403ff38fa606b8603124fd6",
+        "origin": [
+          {
+            "id": "page_0000",
+            "blocks": [
+              {
+                "id": "block_0000_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0000_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0000_0002",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0000_0003",
+                "sha256": "9b167420c7efe476a3d3cca0cfbf2706ed6cc0528b76308dc173553f4c9bdb12"
+              },
+              {
+                "id": "block_0000_0004",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          },
+          {
+            "id": "page_0001",
+            "blocks": [
+              {
+                "id": "block_0001_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0001_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0001_0002",
+                "sha256": "3864992e7ddb77b37666e51e8f532f32ab47a898e713da95ae87969e7db2fc08"
+              },
+              {
+                "id": "block_0001_0003",
+                "sha256": "ca2b22b53eb506f48f210245436cf9df670da931d39788ab6b9796c9a68fa173"
+              }
+            ]
+          },
+          {
+            "id": "page_0002",
+            "blocks": [
+              {
+                "id": "block_0002_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0002_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0002_0002",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0002_0003",
+                "sha256": "e192382dd2bf660bd599115fd43cb6c86685e4235437819afb390a23c1e6827e"
+              },
+              {
+                "id": "block_0002_0004",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          },
+          {
+            "id": "page_0003",
+            "blocks": [
+              {
+                "id": "block_0003_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0003_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0003_0002",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0003_0003",
+                "sha256": "167297bb8c41d293ced54669baa3a1546e50dc23623d1b5414defc1e00076d6e"
+              },
+              {
+                "id": "block_0003_0004",
+                "sha256": "c03923ff22a38f42f69f6e1fe5ec192a9b9386e58c7989d40b005b8ff1f8ebc3"
+              }
+            ]
+          },
+          {
+            "id": "page_0004",
+            "blocks": [
+              {
+                "id": "block_0004_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0004_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0004_0002",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0004_0003",
+                "sha256": "59041378dce59cca622f1c2854a7fc48d6e65c087891f695dd4f2f569e67c35a"
+              },
+              {
+                "id": "block_0004_0004",
+                "sha256": "4d67770681569511d8642d958be332c6bd6907f20e9059116fb21e9d7e7edc33"
+              }
+            ]
+          },
+          {
+            "id": "page_0005",
+            "blocks": [
+              {
+                "id": "block_0005_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0005_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0005_0002",
+                "sha256": "ef9927341e2d82985fd63a78ddc89cf549f97798ff123604d95b3a0e2b0ea135"
+              },
+              {
+                "id": "block_0005_0003",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0005_0004",
+                "sha256": "ce7d215588615175fc699d893c5376f5338f87a6881953ce788b229266bd9db5"
+              }
+            ]
+          },
+          {
+            "id": "page_0006",
+            "blocks": [
+              {
+                "id": "block_0006_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0006_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0006_0002",
+                "sha256": "cdbb481772fddf6bb81b381bca79c83d32e5172ceebe86826e1cb9cda3154a06"
+              },
+              {
+                "id": "block_0006_0003",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0006_0004",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0006_0005",
+                "sha256": "45f3ba2755b94ce055ebca6ccc9f704d745f196dd3bd7fdad7dd571fae56650c"
+              },
+              {
+                "id": "block_0006_0006",
+                "sha256": "8fec1629b811b9cbc6fa21313e768edf7b4c4ee0e3691f37e072cf098f144ec8"
+              },
+              {
+                "id": "block_0006_0007",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "additions": [
+      {
+        "id": "introducir_herramienta_de_transporte",
+        "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a",
+        "storage": {
+          "page": 7,
+          "block": 0
+        },
+        "progressPage": "page_0000"
+      },
+      {
+        "id": "usar_herramienta_de_transporte",
+        "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5",
+        "storage": {
+          "page": 7,
+          "block": 1
+        },
+        "progressPage": "page_0000"
+      },
+      {
+        "id": "colocar_extremo_y_comprobar_transporte",
+        "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5",
+        "storage": {
+          "page": 7,
+          "block": 2
+        },
+        "progressPage": "page_0000"
+      },
+      {
+        "id": "transportar_una_longitud_sobre_semirrecta",
+        "sha256": "4cd9e8a3997d3da7f6900e594a91aa8ac7c6cfb59ca4d8670dd6134285ddaa5c",
+        "storage": {
+          "page": 7,
+          "block": 3
+        },
+        "progressPage": "page_0000"
+      },
+      {
+        "id": "recuperar_transporte_en_otra_orientacion",
+        "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5",
+        "storage": {
+          "page": 7,
+          "block": 4
+        },
+        "progressPage": "page_0005"
+      },
+      {
+        "id": "transportar_longitud_con_otro_sentido",
+        "sha256": "75dd5c0282c86d733b82b8679389e5b64458fb9aa0a402b9fb7c0bc9954165fd",
+        "storage": {
+          "page": 7,
+          "block": 5
+        },
+        "progressPage": "page_0005"
+      }
+    ],
+    "editorial": []
+  }
 }

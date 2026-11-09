@@ -27,7 +27,8 @@ import kotlin.math.round
 
 /** Controls share typed answers and can freeze after success without discarding their state. */
 object MathVisualControls {
-    fun create(context: Context, spec: MathResponseSpec, accentColor: Int, onChange: () -> Unit): MathResponseControl? = when (spec.type) {
+    fun create(context: Context, spec: MathResponseSpec, accentColor: Int, onChange: () -> Unit, onDraftChange: (() -> Unit)? = null): MathResponseControl? = when (spec.type) {
+        "math_segment_transport" -> MathSegmentTransportControl(context, spec, accentColor, onChange, onDraftChange ?: onChange)
         "math_rigid_angle_copy" -> rigidAngle(context, spec, accentColor, onChange)
         "math_coordinate_graph_builder", "math_geometry_builder" -> graph(context, spec, accentColor, onChange)
         "math_number_line" -> if (spec.config.optString("mode", "build_inequality") == "build_inequality") numberLine(context, spec, accentColor, onChange) else null

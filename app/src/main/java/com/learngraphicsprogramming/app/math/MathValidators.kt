@@ -55,6 +55,7 @@ object MathValidators {
         register("coordinates", ::coordinates)
         register("geometry", ::geometry)
         register("rigid_angle_copy", ::rigidAngle)
+        register("segment_transport", SegmentTransport::validate)
     }
 
     fun register(type: String, validator: MathAnswerValidator) {
@@ -88,6 +89,7 @@ object MathValidators {
         tolerance(spec)
         when (type) {
             "rigid_angle_copy" -> RigidAngleCopySpec.parse(spec)
+            "segment_transport" -> SegmentTransportSpec.parse(spec)
             "numeric", "tolerance", "exact_fraction" -> number(spec, "expected")
             "equivalent_expression", "symbolic" -> {
                 requireMath(spec.opt("expected") is String) { "$type requiere expected como texto." }
@@ -110,7 +112,7 @@ object MathValidators {
                         ?: throw IllegalArgumentException("$type.$key requiere un objeto validador.")
                     validateSpec(validator)
                     val childType = validator.getString("type")
-                    val nonTextBuiltins = setOf("choice", "fields", "order", "matching", "number_line", "sliders", "coordinates", "geometry", "rigid_angle_copy")
+                    val nonTextBuiltins = setOf("choice", "fields", "order", "matching", "number_line", "sliders", "coordinates", "geometry", "rigid_angle_copy", "segment_transport")
                     requireMath(childType !in nonTextBuiltins) { "$type.$key requiere un validador de entrada textual/numeral." }
                 }
             }

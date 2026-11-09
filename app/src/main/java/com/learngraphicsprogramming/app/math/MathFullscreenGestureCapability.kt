@@ -12,3 +12,6 @@ object MathFullscreenGesturePolicy {
     fun allowEdgeSwipeToDismiss(view: View): Boolean =
         (view as? MathFullscreenGestureCapability)?.allowEdgeSwipeToDismiss == true
 }
+
+/** Direct placement owns repeated taps; expansion remains available through its button. */
+internal interface MathDirectManipulationSurface

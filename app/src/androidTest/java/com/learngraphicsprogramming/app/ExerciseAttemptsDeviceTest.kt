@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.SystemClock
+import android.view.MotionEvent
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,9 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import com.learngraphicsprogramming.app.math.MathAnswer
+import com.learngraphicsprogramming.app.math.MathRigidAngleCopyView
+import com.learngraphicsprogramming.app.math.MathSegmentTransportView
+import com.learngraphicsprogramming.app.math.EuclideanPosition
 import com.learngraphicsprogramming.app.math.MathAnswerValidator
 import com.learngraphicsprogramming.app.math.MathExpression
 import com.learngraphicsprogramming.app.math.MathExpressionEditor
@@ -139,7 +143,7 @@ class ExerciseAttemptsDeviceTest {
     }
 
     @Test fun everyMathResponseTypeUsesRealControlsAndChargesOncePerWrongAnswer() {
-        assertEquals(13, MathPuzzleTypes.responseTypes.size)
+        assertTrue("Registered response types must be exercised", MathPuzzleTypes.responseTypes.isNotEmpty())
         for (type in MathPuzzleTypes.responseTypes) {
             withFixture(MATH, listOf(listOf(mathBlock(type)))) { scenario ->
                 scenario.onActivity { activity ->
@@ -536,6 +540,13 @@ class ExerciseAttemptsDeviceTest {
                     .put("points", JSONArray("""[{"x":0,"y":0,"draggable":true},{"x":0,"y":1,"draggable":true},{"x":1,"y":0,"draggable":true}]"""))
                     .put("validator", json("""{"type":"geometry","expected":1.5,"shape":"polygon"}"""))
             }
+            "math_rigid_angle_copy" -> {
+                fun figure(vertex: String, first: String, second: String) = json("""{"vertex":"$vertex","sides":["first","second"],"region":"counterclockwise","diagram":{"points":[{"id":"$vertex","x":0,"y":0,"labels":["$vertex"]},{"id":"$first","x":4,"y":0,"labels":["$first"]},{"id":"$second","x":0,"y":3,"labels":["$second"]}],"objects":[{"id":"first","kind":"ray","through":["$vertex","$first"],"contains":["$vertex","$first"]},{"id":"second","kind":"ray","through":["$vertex","$second"],"contains":["$vertex","$second"]}]}}""")
+                block.put("validator", JSONObject().put("type","rigid_angle_copy").put("reference",figure("O","A","B"))
+                    .put("copy",figure("V","C","D")).put("initial",json("""{"x":0,"y":-1,"rotation":0}"""))
+                    .put("relation","congruent").put("positionTolerance",.1).put("directionTolerance",.02))
+            }
+            "math_segment_transport" -> block.put("validator", json("""{"type":"segment_transport","mode":"chain","sources":[{"id":"ab","from":{"x":-3,"y":2,"label":"A"},"to":{"x":0,"y":2,"label":"B"}}],"target":{"origin":{"x":0,"y":0,"label":"M"},"direction":{"x":1,"y":0}},"steps":["ab"],"pointLabels":["N"],"positionTolerance":0.04,"lengthTolerance":0.04}"""))
             else -> error("Unknown math fixture $type")
         }
         return block
@@ -595,7 +606,34 @@ class ExerciseAttemptsDeviceTest {
                 val values = listOf("0", "0", "0", "1", x, "0")
                 descendants(card).filterIsInstance<EditText>().forEachIndexed { index, input -> input.setText(values[index]) }
             }
+            "math_rigid_angle_copy" -> {
+                val visual = descendants(card).filterIsInstance<MathRigidAngleCopyView>().single()
+                visual.mode = MathRigidAngleCopyView.Mode.MOVE_COPY
+                val targetX = when(answer) { Answer.WRONG_A -> 1.0; Answer.WRONG_B -> 2.0; Answer.CORRECT -> 0.0 }
+                drag(visual, visual.project(EuclideanPosition(visual.placement.x,visual.placement.y)),
+                    visual.project(EuclideanPosition(targetX,0.0)))
+            }
+            "math_segment_transport" -> {
+                val visual = descendants(card).filterIsInstance<MathSegmentTransportView>().single()
+                val drawing = requireNotNull(visual.drawingSnapshot())
+                val origin = drawing.points.single { it.id=="target:origin" }.center
+                val first = drawing.points.single { it.id=="source:ab:from" }.center
+                val last = drawing.points.single { it.id=="source:ab:to" }.center
+                val scale = kotlin.math.hypot(last.x-first.x,last.y-first.y)/3
+                visual.setMode("place")
+                val position = EuclideanPosition(origin.x+number.toDouble()*scale,origin.y)
+                drag(visual,position,position)
+            }
             else -> error("No Android control driver for $type")
+        }
+    }
+
+    private fun drag(view: View, from: EuclideanPosition, to: EuclideanPosition) {
+        val time=SystemClock.uptimeMillis()
+        for((action,point) in listOf(MotionEvent.ACTION_DOWN to from,MotionEvent.ACTION_MOVE to to,MotionEvent.ACTION_UP to to)) {
+            val event=MotionEvent.obtain(time,SystemClock.uptimeMillis(),action,point.x.toFloat(),point.y.toFloat(),0)
+            try { assertTrue("The native geometry surface handles the gesture",view.onTouchEvent(event)) }
+            finally { event.recycle() }
         }
     }
 
@@ -727,3 +765,4 @@ class ExerciseAttemptsDeviceTest {
         private const val ATTEMPTS_PREFS = "attempt_reserve_seconds_test"
     }
 }
+

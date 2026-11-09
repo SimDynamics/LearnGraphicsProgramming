@@ -112,6 +112,80 @@
         {
           "type": "paragraph",
           "text": "No confundas sumar longitudes con reunir sin más dos conjuntos de puntos. Si superpones dos copias iguales, el trazo visible puede seguir ocupando un único segmento; eso no duplica su longitud. Para obtener un segmento suma debes disponer las copias consecutivamente con la condición geométrica indicada."
+        },
+        {
+          "type": "paragraph",
+          "text": "Construye ahora las partes, además de interpretar el diagrama. Selecciona A–B en «Longitud», pulsa «Tomar longitud» y lleva la herramienta a M y orienta su apertura sobre la semirrecta; coloca N. Después selecciona C–D en «Longitud», pulsa «Tomar longitud» y lleva su primer extremo a N y conserva el mismo sentido para colocar P. El selector «Punto» permite volver a N o P para corregir una colocación. Comprueba cada tramo con la herramienta antes de comprobar el total."
+        },
+        {
+          "type": "math_puzzle",
+          "schemaVersion": 1,
+          "id": "componer_dos_longitudes_libremente",
+          "prompt": "Construye, en este orden, una copia de AB desde M hasta N y una copia de CD desde N hasta P. M, N y P deben quedar en la semirrecta dada, con N estrictamente entre M y P. Conserva la longitud de cada copia, sin huecos ni solapamientos.",
+          "representations": [],
+          "tools": [],
+          "responses": [
+            {
+              "id": "construccion",
+              "type": "math_segment_transport",
+              "validator": {
+                "type": "segment_transport",
+                "mode": "chain",
+                "sources": [
+                  {
+                    "id": "ab",
+                    "from": {
+                      "x": -4,
+                      "y": 5,
+                      "label": "A"
+                    },
+                    "to": {
+                      "x": -4,
+                      "y": 8,
+                      "label": "B"
+                    }
+                  },
+                  {
+                    "id": "cd",
+                    "from": {
+                      "x": -1,
+                      "y": 6,
+                      "label": "C"
+                    },
+                    "to": {
+                      "x": 1,
+                      "y": 6,
+                      "label": "D"
+                    }
+                  }
+                ],
+                "target": {
+                  "origin": {
+                    "x": -3,
+                    "y": -1,
+                    "label": "M"
+                  },
+                  "direction": {
+                    "x": 1,
+                    "y": 0
+                  }
+                },
+                "steps": [
+                  "ab",
+                  "cd"
+                ],
+                "pointLabels": [
+                  "N",
+                  "P"
+                ],
+                "positionTolerance": 0.04,
+                "lengthTolerance": 0.04
+              }
+            }
+          ],
+          "feedback": {
+            "correct": "MN conserva AB y NP conserva CD. Las partes comparten sólo el extremo N y recorren MP consecutivamente en el mismo sentido. Comprobar únicamente el extremo P no bastaría: una parte alargada y otra acortada podrían conservar el total y perder las dos longitudes pedidas."
+          }
         }
       ]
     },
@@ -368,6 +442,95 @@
         {
           "type": "paragraph",
           "text": "Un resultado aritmético igual no prueba que dos segmentos sean el mismo conjunto de puntos. Con una unidad positiva común, sí prueba que sus longitudes coinciden. Recupera esa diferencia al comparar dos construcciones realizadas en lugares distintos."
+        },
+        {
+          "type": "paragraph",
+          "text": "Recupera el procedimiento con tres fuentes y otra orientación. Cada copia nueva comienza donde termina la anterior. Cambia la apertura de la herramienta sólo al tomar la siguiente fuente; no arrastres un extremo anterior para compensar una longitud equivocada. El orden solicitado fija qué fuente corresponde a cada tramo."
+        },
+        {
+          "type": "math_puzzle",
+          "schemaVersion": 1,
+          "id": "componer_tres_longitudes_en_otra_orientacion",
+          "prompt": "Desde M, construye consecutivamente copias de AB, CD y EF, en ese orden y en el sentido de la semirrecta. Coloca N, P y Q para que MN copie AB, NP copie CD y PQ copie EF. Conserva cada longitud y el orden M, N, P, Q.",
+          "representations": [],
+          "tools": [],
+          "responses": [
+            {
+              "id": "construccion",
+              "type": "math_segment_transport",
+              "validator": {
+                "type": "segment_transport",
+                "mode": "chain",
+                "sources": [
+                  {
+                    "id": "ab",
+                    "from": {
+                      "x": 0,
+                      "y": 4,
+                      "label": "A"
+                    },
+                    "to": {
+                      "x": 1.2,
+                      "y": 5.6,
+                      "label": "B"
+                    }
+                  },
+                  {
+                    "id": "cd",
+                    "from": {
+                      "x": 4,
+                      "y": 2,
+                      "label": "C"
+                    },
+                    "to": {
+                      "x": 4,
+                      "y": 5,
+                      "label": "D"
+                    }
+                  },
+                  {
+                    "id": "ef",
+                    "from": {
+                      "x": 6,
+                      "y": 5,
+                      "label": "E"
+                    },
+                    "to": {
+                      "x": 7,
+                      "y": 5,
+                      "label": "F"
+                    }
+                  }
+                ],
+                "target": {
+                  "origin": {
+                    "x": 2,
+                    "y": -2,
+                    "label": "M"
+                  },
+                  "direction": {
+                    "x": -3,
+                    "y": 4
+                  }
+                },
+                "steps": [
+                  "ab",
+                  "cd",
+                  "ef"
+                ],
+                "pointLabels": [
+                  "N",
+                  "P",
+                  "Q"
+                ],
+                "positionTolerance": 0.04,
+                "lengthTolerance": 0.04
+              }
+            }
+          ],
+          "feedback": {
+            "correct": "Los tres tramos conservan sus fuentes y componen MQ sin retroceder ni solaparse. Las diferentes orientaciones de AB, CD y EF no alteran sus longitudes al transportarlas. El orden pedido permite identificar qué copia aporta cada parte del total."
+          }
         }
       ]
     },
@@ -708,5 +871,483 @@
         }
       ]
     }
-  ]
+  ],
+  "stateLayout": {
+    "version": 2,
+    "locale": "es",
+    "origin": [
+      {
+        "id": "page_0000",
+        "blocks": [
+          {
+            "id": "block_0000_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0000_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0000_0002",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0000_0003",
+            "sha256": "81921a7643bf66d9e3bbe9062ff43fe9fe8cd7186ad1912ea48987f5a59cdada"
+          },
+          {
+            "id": "block_0000_0004",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      },
+      {
+        "id": "page_0001",
+        "blocks": [
+          {
+            "id": "block_0001_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0001_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0001_0002",
+            "sha256": "b142a3116f88af73d6e6cef439529553074455ff3a125e78e2ebd1ed3591e782"
+          },
+          {
+            "id": "block_0001_0003",
+            "sha256": "faade6562d73f65a717e68a5aa5df2329ba1c65980c6b4f72afc8c8f04bc205c"
+          },
+          {
+            "id": "block_0001_0004",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      },
+      {
+        "id": "page_0002",
+        "blocks": [
+          {
+            "id": "block_0002_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0002_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0002_0002",
+            "sha256": "6952429d07664e4ab230069d930b6e20acdb8f3fed9141dbda356a5caf0d93e2"
+          },
+          {
+            "id": "block_0002_0003",
+            "sha256": "deae19724b96f6aef94a2a6b195a722e2d6b1edf4e20613af48a941128427048"
+          },
+          {
+            "id": "block_0002_0004",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      },
+      {
+        "id": "page_0003",
+        "blocks": [
+          {
+            "id": "block_0003_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0003_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0003_0002",
+            "sha256": "89530667e4aeef52b194d57fee10c19732dc88c652bdd13d87c2460fa595840e"
+          },
+          {
+            "id": "block_0003_0003",
+            "sha256": "c08443faa4b2b12aea0d9ea4c55b986e0c5c65723bbfbf1b06614bfa167de546"
+          },
+          {
+            "id": "block_0003_0004",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      },
+      {
+        "id": "page_0004",
+        "blocks": [
+          {
+            "id": "block_0004_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0004_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0004_0002",
+            "sha256": "30d30add2397eb8a5c7de39edebcfba6359204bd6f8c2e39689a026cba10b265"
+          },
+          {
+            "id": "block_0004_0003",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0004_0004",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      },
+      {
+        "id": "page_0005",
+        "blocks": [
+          {
+            "id": "block_0005_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0005_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0005_0002",
+            "sha256": "2ba286bc8c81108188060c790f132e19901d97133a1109798c5843082436d632"
+          },
+          {
+            "id": "block_0005_0003",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      },
+      {
+        "id": "page_0006",
+        "blocks": [
+          {
+            "id": "block_0006_0000",
+            "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+          },
+          {
+            "id": "block_0006_0001",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0006_0002",
+            "sha256": "583ea06805e1a737451d3a8682588de9c86fe693a4ba14254338e4f0df5edfec"
+          },
+          {
+            "id": "block_0006_0003",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          },
+          {
+            "id": "block_0006_0004",
+            "sha256": "0c0e8513dba8bd08efda25ab68b2bbdf6386539f092141883674d652d68c37da"
+          },
+          {
+            "id": "block_0006_0005",
+            "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+          }
+        ]
+      }
+    ],
+    "current": [
+      {
+        "id": "page_0000",
+        "blocks": [
+          "block_0000_0000",
+          "block_0000_0001",
+          "block_0000_0002",
+          "block_0000_0003",
+          "block_0000_0004",
+          "preparar_composicion_libre",
+          "componer_dos_longitudes_libremente"
+        ]
+      },
+      {
+        "id": "page_0001",
+        "blocks": [
+          "block_0001_0000",
+          "block_0001_0001",
+          "block_0001_0002",
+          "block_0001_0003",
+          "block_0001_0004"
+        ]
+      },
+      {
+        "id": "page_0002",
+        "blocks": [
+          "block_0002_0000",
+          "block_0002_0001",
+          "block_0002_0002",
+          "block_0002_0003",
+          "block_0002_0004",
+          "preparar_composicion_de_tres_partes",
+          "componer_tres_longitudes_en_otra_orientacion"
+        ]
+      },
+      {
+        "id": "page_0003",
+        "blocks": [
+          "block_0003_0000",
+          "block_0003_0001",
+          "block_0003_0002",
+          "block_0003_0003",
+          "block_0003_0004"
+        ]
+      },
+      {
+        "id": "page_0004",
+        "blocks": [
+          "block_0004_0000",
+          "block_0004_0001",
+          "block_0004_0002",
+          "block_0004_0003",
+          "block_0004_0004"
+        ]
+      },
+      {
+        "id": "page_0005",
+        "blocks": [
+          "block_0005_0000",
+          "block_0005_0001",
+          "block_0005_0002",
+          "block_0005_0003"
+        ]
+      },
+      {
+        "id": "page_0006",
+        "blocks": [
+          "block_0006_0000",
+          "block_0006_0001",
+          "block_0006_0002",
+          "block_0006_0003",
+          "block_0006_0004",
+          "block_0006_0005"
+        ]
+      }
+    ],
+    "family": {
+      "es": {
+        "sha256": "1012aa23196c1a3aec958dbba6fda45d8eee4fa515d5dbbe586186753615d41b",
+        "origin": [
+          {
+            "id": "page_0000",
+            "blocks": [
+              {
+                "id": "block_0000_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0000_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0000_0002",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0000_0003",
+                "sha256": "81921a7643bf66d9e3bbe9062ff43fe9fe8cd7186ad1912ea48987f5a59cdada"
+              },
+              {
+                "id": "block_0000_0004",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          },
+          {
+            "id": "page_0001",
+            "blocks": [
+              {
+                "id": "block_0001_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0001_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0001_0002",
+                "sha256": "b142a3116f88af73d6e6cef439529553074455ff3a125e78e2ebd1ed3591e782"
+              },
+              {
+                "id": "block_0001_0003",
+                "sha256": "faade6562d73f65a717e68a5aa5df2329ba1c65980c6b4f72afc8c8f04bc205c"
+              },
+              {
+                "id": "block_0001_0004",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          },
+          {
+            "id": "page_0002",
+            "blocks": [
+              {
+                "id": "block_0002_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0002_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0002_0002",
+                "sha256": "6952429d07664e4ab230069d930b6e20acdb8f3fed9141dbda356a5caf0d93e2"
+              },
+              {
+                "id": "block_0002_0003",
+                "sha256": "deae19724b96f6aef94a2a6b195a722e2d6b1edf4e20613af48a941128427048"
+              },
+              {
+                "id": "block_0002_0004",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          },
+          {
+            "id": "page_0003",
+            "blocks": [
+              {
+                "id": "block_0003_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0003_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0003_0002",
+                "sha256": "89530667e4aeef52b194d57fee10c19732dc88c652bdd13d87c2460fa595840e"
+              },
+              {
+                "id": "block_0003_0003",
+                "sha256": "c08443faa4b2b12aea0d9ea4c55b986e0c5c65723bbfbf1b06614bfa167de546"
+              },
+              {
+                "id": "block_0003_0004",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          },
+          {
+            "id": "page_0004",
+            "blocks": [
+              {
+                "id": "block_0004_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0004_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0004_0002",
+                "sha256": "30d30add2397eb8a5c7de39edebcfba6359204bd6f8c2e39689a026cba10b265"
+              },
+              {
+                "id": "block_0004_0003",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0004_0004",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          },
+          {
+            "id": "page_0005",
+            "blocks": [
+              {
+                "id": "block_0005_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0005_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0005_0002",
+                "sha256": "2ba286bc8c81108188060c790f132e19901d97133a1109798c5843082436d632"
+              },
+              {
+                "id": "block_0005_0003",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          },
+          {
+            "id": "page_0006",
+            "blocks": [
+              {
+                "id": "block_0006_0000",
+                "sha256": "a30d0555835b703d0dd5a90aabb0134813afd11904b5364f69f03b01695f6d7a"
+              },
+              {
+                "id": "block_0006_0001",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0006_0002",
+                "sha256": "583ea06805e1a737451d3a8682588de9c86fe693a4ba14254338e4f0df5edfec"
+              },
+              {
+                "id": "block_0006_0003",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              },
+              {
+                "id": "block_0006_0004",
+                "sha256": "0c0e8513dba8bd08efda25ab68b2bbdf6386539f092141883674d652d68c37da"
+              },
+              {
+                "id": "block_0006_0005",
+                "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "additions": [
+      {
+        "id": "preparar_composicion_libre",
+        "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5",
+        "storage": {
+          "page": 7,
+          "block": 0
+        },
+        "progressPage": "page_0000"
+      },
+      {
+        "id": "componer_dos_longitudes_libremente",
+        "sha256": "3506817473d45fcd17b416763bd8e3cc83a60fad8f65c86887760cc8f2241aac",
+        "storage": {
+          "page": 7,
+          "block": 1
+        },
+        "progressPage": "page_0000"
+      },
+      {
+        "id": "preparar_composicion_de_tres_partes",
+        "sha256": "1cfe2875698dd4010559f715fe17ef8ef9aa5a7b532dd7697727408285eb56e5",
+        "storage": {
+          "page": 7,
+          "block": 2
+        },
+        "progressPage": "page_0002"
+      },
+      {
+        "id": "componer_tres_longitudes_en_otra_orientacion",
+        "sha256": "c8126260c60cabed77e26c74d08b98c1d80228059521140406c9177bf6dd829d",
+        "storage": {
+          "page": 7,
+          "block": 3
+        },
+        "progressPage": "page_0002"
+      }
+    ],
+    "editorial": []
+  }
 }

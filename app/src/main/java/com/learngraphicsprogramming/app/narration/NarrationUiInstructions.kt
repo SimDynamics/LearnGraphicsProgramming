@@ -27,6 +27,8 @@ internal object NarrationUiInstructions {
             MathPuzzleUiInstructions.TILES -> R.string.math_ui_tiles
             MathPuzzleUiInstructions.TARGETS -> R.string.math_ui_targets
             MathPuzzleUiInstructions.EDIT_COORDINATES -> R.string.math_ui_edit_coordinates
+            MathPuzzleUiInstructions.SEGMENT_HELP -> R.string.math_segment_help
+            MathPuzzleUiInstructions.SEGMENT_LEGEND -> R.string.math_segment_legend
             MathPuzzleUiInstructions.RIGID_ANGLE_HELP -> R.string.math_rigid_help
             MathPuzzleUiInstructions.RIGID_ANGLE_LEGEND -> R.string.math_rigid_legend
             MathPuzzleUiInstructions.POSITION -> R.string.math_ui_position
@@ -38,3 +40,4 @@ internal object NarrationUiInstructions {
         return UiLanguageSettings.localizedContext(context).getString(resource)
     }
 }
+

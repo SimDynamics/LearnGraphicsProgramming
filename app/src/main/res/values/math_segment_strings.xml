@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="math_segment_invalid_answer">No se puede evaluar este estado geométrico. Revisa la actividad.</string>
+    <string name="math_segment_complete">Construye todos los extremos solicitados antes de comprobar.</string>
+    <string name="math_segment_review_line">Revisa que todos los extremos pertenezcan a la semirrecta o al segmento dado.</string>
+    <string name="math_segment_review_direction">Revisa el sentido de la semirrecta desde su origen.</string>
+    <string name="math_segment_review_order">Revisa el orden de los extremos: las partes deben seguirse sin retroceder ni solaparse.</string>
+    <string name="math_segment_review_coverage">Revisa que las marcas interiores pertenezcan al segmento completo y no coincidan con sus extremos.</string>
+    <string name="math_segment_review_length">Revisa la apertura de cada parte; conservar sólo la longitud total no basta.</string>
+    <string name="math_segment_review_total">Revisa que las partes cubran exactamente el total solicitado, sin huecos ni solapamientos.</string>
+    <string name="math_segment_satisfied">La construcción cumple las condiciones dentro de las tolerancias operativas de colocación.</string>
+    <string name="math_segment_help">Coloca los puntos solicitados libremente. Toma una longitud y mueve o gira la herramienta sin estirarla. En modo Vista puedes desplazar el dibujo; Acercar y Alejar cambian únicamente el encuadre.</string>
+    <string name="math_segment_legend">Las figuras dadas, los puntos construidos y la herramienta comparten una sola escala. No se muestran coordenadas ni posiciones solución.</string>
+    <string name="math_segment_place">Colocar puntos</string>
+    <string name="math_segment_move_tool">Mover herramienta</string>
+    <string name="math_segment_rotate_tool">Girar herramienta</string>
+    <string name="math_segment_view">Vista</string>
+    <string name="math_segment_point">Punto</string>
+    <string name="math_segment_measure">Longitud</string>
+    <string name="math_segment_zoom_in">Acercar</string>
+    <string name="math_segment_zoom_out">Alejar</string>
+    <string name="math_segment_reset_view">Restablecer vista</string>
+    <string name="math_segment_reset_tool">Restablecer herramienta</string>
+    <string name="math_segment_reset_points">Restablecer construcción</string>
+    <string name="math_segment_surface">Construcción libre de segmentos</string>
+    <string name="math_segment_measure_action">Tomar longitud</string>
+    <string name="math_segment_unavailable">No se pudo actualizar el dibujo. El intento anterior se conserva.</string>
+</resources>
