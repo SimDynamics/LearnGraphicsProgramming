@@ -92,6 +92,7 @@ object MathTextRenderer {
             appendMath(value)
             return output
         }
+        val fractions = MathInlineFractions.ranges(value)
         var index = 0
         while (index < value.length) {
             val delimiters = delimitersAt(value, index)
@@ -106,6 +107,12 @@ object MathTextRenderer {
                     continue
                 }
             }
+            val fraction = fractions.firstOrNull { it.start == index }
+            if (fraction != null) {
+                appendMath(value.substring(fraction.start, fraction.endExclusive))
+                index = fraction.endExclusive
+                continue
+            }
             val protectedSource = protected.firstOrNull { it.start == index }
             if (protectedSource != null) {
                 output.append(value, protectedSource.start, protectedSource.endExclusive)
@@ -116,7 +123,8 @@ object MathTextRenderer {
                 it.matchAt(value, index)
             }.maxByOrNull { it.value.length }
             if (candidate != null && (index == 0 || !value[index - 1].isLetterOrDigit()) &&
-                protected.none { it.start <= candidate.range.last && it.endExclusive > index }) {
+                protected.none { it.start <= candidate.range.last && it.endExclusive > index } &&
+                fractions.none { it.start <= candidate.range.last && it.endExclusive > index }) {
                 appendMath(candidate.value)
                 index = candidate.range.last + 1
             } else if (value[index] in "π≤≥≠×÷") {
